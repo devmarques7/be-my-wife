@@ -1,2 +1,2 @@
-# Be-My-wife-
+# be-my-wife
 Digital Wedding Web Page 
