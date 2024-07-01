@@ -1,22 +1,23 @@
-import Link from "next/link";
 import { useContext } from "react";
-import { AppContext } from "../../../contexts/AppContext";
 import { GrFormClose } from "react-icons/gr";
-
-import { Component } from "./style";
+import { useTheme } from "@mui/material";
+import { Component } from "./stylePrivacyPolicy";
+import { AppContext } from "../../context/AppContext";
+import { Link } from "@mui/material";
 
 const Privacy = (): JSX.Element => {
+  const theme = useTheme();
   const { webContent, policy, handlePolicy } = useContext(AppContext);
-  const { description, link } = webContent.PRIVACY;
+  const { DESCRIPTION, LINK } = webContent.PRIVACY;
 
   return (
     <>
       {policy && (
-        <Component>
+        <Component theme={theme}>
           <div className="container ">
-            <span className="policy description">{description}</span>
-            <Link href={link.href} className="policy link">
-              {link.text}
+            <span className="policy description">{DESCRIPTION}</span>
+            <Link href={LINK.HREF} className="policy link">
+              {LINK.TEXT}
             </Link>
           </div>
           <button className="close policy" onClick={handlePolicy}>
