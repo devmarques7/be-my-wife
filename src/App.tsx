@@ -1,18 +1,14 @@
-import { CssBaseline, ThemeProvider } from "@mui/material";
-import { AppContextProvider } from "./context/AppContext";
-import { ColorModeContext, useMode } from "./theme/theme";
+import { AppThemeProvider } from "./theme/themeProvider";
+import AppContextProvider from "./context/AppContext";
+import Layout from "./layout/Layout";
 
 function App() {
-  const [theme, colorMode] = useMode();
-
   return (
-    <ColorModeContext.Provider value={colorMode}>
-      <ThemeProvider theme={theme}>
-        <AppContextProvider>
-          <CssBaseline />
-        </AppContextProvider>
-      </ThemeProvider>
-    </ColorModeContext.Provider>
+    <AppThemeProvider>
+      <AppContextProvider>
+        <Layout />
+      </AppContextProvider>
+    </AppThemeProvider>
   );
 }
 
