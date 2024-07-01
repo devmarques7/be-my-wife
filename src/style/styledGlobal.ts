@@ -1,6 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 
-const GlobalStyles = createGlobalStyle<{ isMenuOpen: boolean }>`
+const GlobalStyles = createGlobalStyle<{ isMenuOpen?: boolean }>`
   :root {
     --font-family: ${({ theme }) => theme.typography.fontFamily};
     font-optical-sizing: auto;
