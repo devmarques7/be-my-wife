@@ -11,7 +11,7 @@ export const WEB_SITE_CONTENT_EN = {
     DESCRIPTION: " You can see our updated",
     LINK: {
       TEXT: "Privacy Policy here",
-      HREF: "/Work",
+      HREF: "#home_page",
     },
   },
 };
