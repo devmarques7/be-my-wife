@@ -1,5 +1,6 @@
+import { useTheme } from "@mui/material";
 import { StyledContainer } from "./styleContainer";
-import { ReactNode, HTMLAttributes, useEffect } from "react";
+import { ReactNode, HTMLAttributes } from "react";
 
 interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
   backgroundType?: "image" | "color" | "video";
@@ -25,13 +26,11 @@ const Container = ({
   children,
   ...restProps
 }: ContainerProps) => {
-
-  useEffect(() => {
-    console.log(backgroundSrc)
-  },[])
+  const theme = useTheme();
 
   return (
     <StyledContainer
+      theme={theme}
       $backgroundColor={backgroundType === "color" ? backgroundSrc : undefined}
       $backgroundImage={backgroundType === "image" ? backgroundSrc : undefined}
       $size={size}

@@ -1,4 +1,4 @@
-import { createTheme, ThemeOptions } from "@mui/material/styles";
+import { createTheme, ThemeOptions } from "@mui/material/styles"; 
 import { createContext, useMemo, useState } from "react";
 
 // Definição das cores customizadas
@@ -125,38 +125,54 @@ export interface ThemeSettings extends ThemeOptions {
     fontFamily: string;
     fontSize: number;
     h1: {
-      fontFamily: string;
-      fontSize: number;
+        fontFamily: string;
+        fontSize: number;
+        fontWeight:number;
+        lineHeight: number;
     };
     h2: {
-      fontFamily: string;
-      fontSize: number;
-    };
+    fontFamily: string;
+    fontSize: number;
+    fontWeight: number;
+    lineHeight: number;
+}
     h3: {
       fontFamily: string;
       fontSize: number;
-    };
+      fontWeight: number;
+      lineHeight: number;
+  }
     h4: {
       fontFamily: string;
       fontSize: number;
-    };
+      fontWeight: number;
+      lineHeight: number;
+  }
     h5: {
       fontFamily: string;
       fontSize: number;
-    };
+      fontWeight: number;
+      lineHeight: number;
+  }
     h6: {
       fontFamily: string;
       fontSize: number;
-    };
+      fontWeight: number;
+      lineHeight: number;
+  }
     p: {
       fontFamily: string;
       fontSize: number;
-    };
+      fontWeight: number;
+      lineHeight: number;
+  }
     span: {
       fontFamily: string;
       fontSize: number;
-    };
-  };
+      fontWeight: number;
+      lineHeight: number;
+  }
+}
   breakpoints: {
     values: {
       xs: number;
@@ -167,9 +183,8 @@ export interface ThemeSettings extends ThemeOptions {
     };
   };
 }
-
-// Variável para a fonte
-const fontFamily = ["Playfair Display SC", "serif"].join(",");
+//"Shadows Into Light", cursive;
+const fontFamily = ["Shadows Into Light", "cursive"].join(",");
 
 export const themeSettings = (mode: CustomPaletteMode["mode"]): ThemeSettings => {
   const colors = tokens(mode);
@@ -221,38 +236,54 @@ export const themeSettings = (mode: CustomPaletteMode["mode"]): ThemeSettings =>
     },
     typography: {
       fontFamily: fontFamily,
-      fontSize: 12,
+      fontSize: 14, // Base font size
       h1: {
         fontFamily: fontFamily,
-        fontSize: 45,
+        fontSize: 48,
+        fontWeight: 700, // Bold
+        lineHeight: 1.2, // Line height for better readability
       },
       h2: {
         fontFamily: fontFamily,
         fontSize: 40,
+        fontWeight: 600,
+        lineHeight: 1.3,
       },
       h3: {
         fontFamily: fontFamily,
-        fontSize: 35,
+        fontSize: 36,
+        fontWeight: 600,
+        lineHeight: 1.3,
       },
       h4: {
         fontFamily: fontFamily,
         fontSize: 30,
+        fontWeight: 500,
+        lineHeight: 1.4,
       },
       h5: {
         fontFamily: fontFamily,
-        fontSize: 25,
+        fontSize: 24,
+        fontWeight: 500,
+        lineHeight: 1.4,
       },
       h6: {
         fontFamily: fontFamily,
-        fontSize: 20,
+        fontSize: 22,
+        fontWeight: 400,
+        lineHeight: 1.5,
       },
       p: {
         fontFamily: fontFamily,
-        fontSize: 15,
+        fontSize: 20,
+        fontWeight: 400,
+        lineHeight: 1.6,
       },
       span: {
         fontFamily: fontFamily,
-        fontSize: 15,
+        fontSize: 20,
+        fontWeight: 400,
+        lineHeight: 1.5,
       },
     },
     breakpoints: {
@@ -266,6 +297,7 @@ export const themeSettings = (mode: CustomPaletteMode["mode"]): ThemeSettings =>
     },
   };
 };
+
 
 // Interface para o contexto de modo de cor
 interface ColorModeContextType {

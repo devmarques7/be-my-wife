@@ -1,5 +1,8 @@
 export interface ICarousel {
-  photos: { src: string }[];
+  photos: {
+    src: string;
+    description: string;
+}[]
   title?: string;
   subtitle?: string;
   arrow?: boolean;
