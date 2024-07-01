@@ -16,7 +16,7 @@ const PhotoSlider: React.FC<PhotoSliderProps> = ({ photos }) => {
         spaceBetween={50}
         slidesPerView={1}
         loop={true}
-        autoplay={{ delay: 6000 }}
+        autoplay={{ delay: 5000 }}
         modules={[Autoplay]}
       >
         {photos.map((photo, index) => (

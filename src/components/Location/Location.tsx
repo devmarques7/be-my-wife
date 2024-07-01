@@ -9,14 +9,15 @@ export interface ILocationProps {
   title: string;
   leftText: string;
   rightText: string;
+  url: string;
   photos: { src: string }[];
 }
 
-const Location: React.FC<ILocationProps> = ({ title, leftText, rightText, photos }) => {
+const Location: React.FC<ILocationProps> = ({ title, leftText, rightText, photos, url }) => {
   const theme = useTheme();
 
   return (
-    <Container id="#location_page" backgroundSrc={theme.palette.background.default} backgroundType="color">
+    <Container id="location_page" backgroundSrc={theme.palette.background.default} backgroundType="color">
       <StyledLocation theme={theme}>
         <SideText theme={theme} className="location__side-text location__side-text--left">{leftText}</SideText>
         <div className="location__main-content">
@@ -24,7 +25,7 @@ const Location: React.FC<ILocationProps> = ({ title, leftText, rightText, photos
           <PhotoContainer theme={theme} className="location__photo-container">
             <PhotoSlider photos={photos} />
           </PhotoContainer>
-          <AppButton className="location__app_button" text="Visit Location"></AppButton>
+          <AppButton className="location__app_button" text="Visit Location" navigateTo={url}></AppButton>
         </div>
         <SideText theme={theme} className="location__side-text location__side-text--right">{rightText}</SideText>
       </StyledLocation>

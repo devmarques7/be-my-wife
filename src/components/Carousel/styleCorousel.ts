@@ -84,6 +84,7 @@ export const StyledCarousel = styled.div`
 
   .text-box {
     height: 25%; // The remaining height for the text box
+    text-align: center;
     padding: 1rem;
     border-radius: 0 0 2rem 2rem;
     display: flex;
@@ -143,29 +144,30 @@ export const StyledTitle = styled.h5`
 
     font-family: ${({ theme }) => theme.typography.h5.fontFamily} !important;
     color: ${({ theme }) => theme.palette.secondary.main};
-    font-weight: lighter;
-    font-size: 8rem;
+    font-weight: 600;
+    font-size: 9rem;
 
-    min-width: 80%;
+    min-width: 70%;
 
     @media (min-width: 768px) {
-      top: 12rem;
+      top: 16rem;
+      min-width: 80%;
     }
 
     @media (min-width: 1024px) {
-      top: 16rem;
+      top: 20rem;
     }
 
     @media (min-width: 1440px) {
-      top: 16.5rem;
+      top: 20.5rem;
     }
 
     @media (min-width: 2560px) {
-      top: 17rem;
+      top: 21rem;
     }
 
     @media (min-width: 3860px) {
-      top: 20rem;
+      top: 24rem;
     }
 `
 

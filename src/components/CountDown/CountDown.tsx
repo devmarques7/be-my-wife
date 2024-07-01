@@ -46,7 +46,7 @@ const CountDown: React.FC<ICountDownProps> = () => {
   }, [eventDate]);
 
   return (
-    <Container id="#countdown_page" backgroundType="color" backgroundSrc={theme.palette.secondary.main}>
+    <Container id="countdown_page" backgroundType="image" backgroundSrc="/source/g&d.jpg">
       <StyledCountDown theme={theme}>
         <StyledTitle theme={theme}>Event Countdown</StyledTitle>
         <CountdownContainer>

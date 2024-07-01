@@ -12,17 +12,18 @@ import { useTheme } from "@mui/material";
 
 const Carousel = ({ photos, title, subtitle }: ICarousel) => {
   const theme = useTheme();
+    const slidesPerView = Math.min(photos.length, 2); 
   return (
-    <StyledCarousel theme={theme}>
+    <StyledCarousel id="home_page"  theme={theme}>
       <div className="container">
-        {title && <StyledTitle theme={theme} >{title}</StyledTitle>}
+        {title && <StyledTitle className="title" theme={theme} >{title}</StyledTitle>}
         {subtitle && <StyledSubTitle theme={theme} >{subtitle}</StyledSubTitle>}
         <Swiper
           effect={"coverflow"}
           grabCursor={true}
           centeredSlides={true}
           loop={true}
-          slidesPerView={"auto"} // Maintain auto width of slides
+          slidesPerView={slidesPerView} // Maintain auto width of slides
           spaceBetween={340} // Increase space between slides
           coverflowEffect={{
             rotate: 0,
@@ -43,11 +44,11 @@ const Carousel = ({ photos, title, subtitle }: ICarousel) => {
         >
           {photos.map((photo, index) => (
             <SwiperSlide key={index} style={{ width: '25rem', minWidth: "25rem" }}>
-              <a href="https://www.google.com/" target="_blank"  className="tag_slide_image" rel="noopener noreferrer">
+              <a className="tag_slide_image" rel="noopener noreferrer">
                 <img src={photo.src} alt="slide_image" />
               </a>
               <div className="text-box">
-                <p>Customizable text here</p>
+                <p>{photo.description}</p>
               </div>
             </SwiperSlide>
           ))}
