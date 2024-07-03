@@ -52,7 +52,7 @@ export const WEB_SITE_CONTENT_EN = {
     PHOTOS_LOCATION:[
       {SRC:"/source/villa.jpg"},
       {SRC:"/source/villa2.jpg"},
-      {SRC:"/source/villa3.jpg"}
+      {SRC:"/source/villa4.jpg"}
     ]
   },
   FOOTER : {
