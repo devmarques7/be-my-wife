@@ -7,6 +7,7 @@ interface ContainerProps extends HTMLAttributes<HTMLDivElement> {
   size?: "small" | "medium" | "big" | string;
   personalizedWidth?: string;
   backgroundSrc?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   logo?: any;
   id?: string;
   logoWidth?: string;
