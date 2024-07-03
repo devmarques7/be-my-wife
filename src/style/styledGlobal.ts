@@ -12,7 +12,7 @@ const GlobalStyles = createGlobalStyle<{ isMenuOpen?: boolean }>`
     font-family: var(--font-family);
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
-    overflow-x: hidden;
+    overflow-x: none;
     overflow-y: ${({ isMenuOpen }) => (isMenuOpen ? 'hidden' : 'auto')}; /* Disable vertical scroll when menu is open */
   }
 
