@@ -65,7 +65,7 @@ export const WEB_SITE_CONTENT_PT = {
   PRIVACY: {
     DESCRIPTION: "Você pode ver nossa",
     LINK: {
-      TEXT: "Política de Privacidade atualizada aqui",
+      TEXT: "Política de Privacidade",
       HREF: "#home_page",
     },
   },
