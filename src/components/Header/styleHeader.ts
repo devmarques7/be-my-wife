@@ -2,11 +2,11 @@ import { Box, Link } from '@mui/material';
 import styled from 'styled-components';
 
 // Estilize o componente StyledBox
-export const StyledBox = styled.header`
+export const StyledHeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100%;
+  width: 100vw;
   height: 80px;
   padding: 0 40px;
   background-color: ${({ theme }) => theme.palette.background.default};
