@@ -3,6 +3,7 @@ import CountDown from "../components/CountDown/CountDown"
 import Footer from "../components/Footer/Footer"
 import Header from "../components/Header/Header"
 import Location from "../components/Location/Location"
+import Privacy from "../components/Privacy Policy/privacyPolicy"
 import { StyledLayout } from "./styleLayout"
 
 
@@ -49,6 +50,7 @@ const Layout: React.FC<ILayoutProps> = () => {
 
     return (
         <StyledLayout >
+            <Privacy/>
             <Header/>
             <Carousel
                 photos={carousel}

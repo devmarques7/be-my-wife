@@ -7,7 +7,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import GlobalStyles from "../../style/styledGlobal";
 
-
 export interface IHeaderProps {}
 
 const Header: React.FC<IHeaderProps> = () => {
@@ -51,9 +50,9 @@ const Header: React.FC<IHeaderProps> = () => {
 
   return (
     <>
-      <GlobalStyles isMenuOpen={isMenuOpen} theme={theme} /> {/* Apply global style with dynamic property */}
+      <GlobalStyles isMenuOpen={isMenuOpen} theme={theme}/>
       <StyledBox theme={theme}>
-        <HamburgerIcon isMenuOpen={isMenuOpen} onClick={toggleMenu}>
+        <HamburgerIcon $isMenuOpen={isMenuOpen} onClick={toggleMenu}>
           {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
         </HamburgerIcon>
         <StyledNav className="desktop-nav">{NAVBAR.map((link) => conditionalRender(link))}</StyledNav>

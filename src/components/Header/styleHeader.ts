@@ -1,6 +1,7 @@
 import { Box, Link } from '@mui/material';
 import styled from 'styled-components';
 
+// Estilize o componente StyledBox
 export const StyledBox = styled.header`
   display: flex;
   justify-content: space-between;
@@ -23,6 +24,7 @@ export const StyledBox = styled.header`
   }
 `;
 
+// Estilize o componente StyledNav
 export const StyledNav = styled(Box)`
   display: flex;
   justify-content: space-between;
@@ -31,32 +33,35 @@ export const StyledNav = styled(Box)`
   gap: 20px;
 `;
 
+// Estilize o componente StyledLink
 export const StyledLink = styled(Link)`
   font-size: ${({ theme }) => theme.typography.p.fontSize}px !important;
   color: ${({ theme }) => theme.palette.secondary.main} !important;
   cursor: pointer;
 `;
 
-export const HamburgerIcon = styled.div<{ isMenuOpen: boolean }>`
+// Estilize o componente HamburgerIcon e adicione a propriedade $isMenuOpen
+export const HamburgerIcon = styled.div<{ $isMenuOpen: boolean }>`
   display: none;
   cursor: pointer;
 
   @media (max-width: 768px) {
-    display: flex;
+    display: ${({ $isMenuOpen }) => ($isMenuOpen ? 'none' : 'flex')};
     align-items: center;
-    opacity: ${({ isMenuOpen }) => (isMenuOpen ? '0%' : '100%')} ;
   }
 `;
 
+// Estilize o componente MobileMenu
 export const MobileMenu = styled.div`
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100%;
-  background-color: ${({ theme }) => `${theme.palette.primary.main}90`}; // 50% opacity
+  height: 100vh;
+  background-color: ${({ theme }) => `${theme.palette.primary.main}80`}; // 50% opacity
   z-index: 20;
   padding: 20px;
   transform: translateY(-100%);
@@ -64,12 +69,11 @@ export const MobileMenu = styled.div`
 
   &.open {
     transform: translateY(0);
-    overflow-y: hidden;
   }
 
   .mobile-menu__header {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-end;
     margin-bottom: 20px;
   }
 
@@ -79,5 +83,6 @@ export const MobileMenu = styled.div`
     gap: 20px;
     justify-content: center;
     align-items: center;
+    height: calc(100% - 40px); // Ajuste para garantir que a navegação esteja centralizada verticalmente
   }
 `;
