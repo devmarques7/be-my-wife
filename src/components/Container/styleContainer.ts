@@ -12,7 +12,6 @@ interface IStyledContainer {
 export const StyledContainer = styled.div<IStyledContainer>`
   display: flex;
   height: 100vh;
-  
   flex-direction: column;
   justify-content: center;
 
@@ -23,7 +22,7 @@ export const StyledContainer = styled.div<IStyledContainer>`
   background-size: cover;
   background-position: center center;
 
-  min-width: ${(props) => props.$personalizedWidth};
+  width: 100vw; // Ajuste para garantir que o contêiner ocupe 100% da largura do viewport
 
   ${(props) => {
     switch (props.$size) {

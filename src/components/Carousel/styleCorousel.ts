@@ -2,6 +2,12 @@ import styled from "styled-components";
 
 export const StyledCarousel = styled.div`
   background-color: ${({ theme }) => theme.palette.background.default};
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
 
   html {
     font-size: 62.5%;
@@ -62,54 +68,36 @@ export const StyledCarousel = styled.div`
   }
 
   .swiper_container {
-    height: 52rem;
+    height: 80%;
     padding: 2rem 0;
     position: relative;
+    width: 100%;
   }
 
   .swiper-slide {
-    width: 32rem;
+    width: 37rem;
     height: 42rem;
     position: relative;
-    min-width: 32rem;
     transition: transform 0.3s ease-in-out;
   }
 
   .swiper-slide img {
-    width: 100%;
-    height: 95%; // Adjust the height to make space for the text box
+    position: absolute;
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust for exact center */
+
+    width: 65%;
+    height: 90%;
     border-radius: 0rem;
     object-fit: cover;
-  }
 
-  .text-box {
-    height: 25%; // The remaining height for the text box
-    text-align: center;
-    padding: 1rem;
-    border-radius: 0 0 2rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    @media (max-width: 480px) {
+      height: 95%;
+    }
   }
 
   .swiper-slide-active-text .text-box {
     opacity: 1;
-  }
-
-  @media (max-width: 500px) {
-    .swiper_container {
-      height: 47rem;
-    }
-    .swiper-slide {
-      width: 28rem !important;
-      height: 36rem !important;
-    }
-    .swiper-slide img {
-      width: 28rem !important;
-      height: 36rem !important;
-    }
   }
 
   .swiper-slide-shadow-left,
@@ -131,81 +119,102 @@ export const StyledCarousel = styled.div`
   .swiper-pagination .swiper-pagination-bullet-active {
     background: grey;
   }
+
+
+  @media (max-width: 1075px) {
+    .swiper-slide {
+      width: 30rem;
+      height: 34rem;
+
+      img{
+        height: 80%;
+        width: 18rem;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    .swiper-slide {
+      width: 25rem;
+      height: 26rem;
+
+      img{
+        height: 95%;
+        width: 18rem;
+      }
+    }
+  }
+
+  @media (max-width: 380px) {
+    .swiper-slide {
+      width: 20rem;
+      height: 25rem;
+    }
+  } 
 `;
 
-
 export const StyledTitle = styled.h5`
-    position: absolute;
-    text-align: center;
+  position: relative;
+  text-align: center;
+  z-index: 10;
 
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Adjust for exact center */
-    z-index: 10;
+  font-family: ${({ theme }) => theme.typography.h5.fontFamily} !important;
+  color: ${({ theme }) => theme.palette.secondary.main};
+  font-weight: 600;
+  font-size: clamp(3.5rem, 12vw, 12rem);
+  top: clamp(10rem, 2vw, 18rem);
+  max-height:10px;
 
-    font-family: ${({ theme }) => theme.typography.h5.fontFamily} !important;
-    color: ${({ theme }) => theme.palette.secondary.main};
-    font-weight: 600;
-    font-size: 9rem;
-
-    min-width: 70%;
-
-    @media (min-width: 768px) {
-      top: 16rem;
-      min-width: 80%;
-    }
-
-    @media (min-width: 1024px) {
-      top: 20rem;
-    }
-
-    @media (min-width: 1440px) {
-      top: 20.5rem;
-    }
-
-    @media (min-width: 2560px) {
-      top: 21rem;
-    }
-
-    @media (min-width: 3860px) {
-      top: 24rem;
-    }
-`
+`;
 
 export const StyledSubTitle = styled.h4`
+  position: relative;
+  text-align: center;
+  left: 35%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust for exact center */
+  z-index: 10;
 
-    position: absolute;
-    text-align: center;
+  font-family: ${({ theme }) => theme.typography.h4.fontFamily} !important;
+  color: ${({ theme }) => theme.palette.secondary.main};
+  font-weight: lighter;
+  font-size: 1.5rem;
 
-    left: 35%; /* Center horizontally */
-    transform: translateX(-50%); /* Adjust for exact center */
-    z-index: 10;
+  @media (min-width: 768px) {
+    top: 22rem;
+  }
 
-    font-family: ${({ theme }) => theme.typography.h4.fontFamily} !important;
-    color: ${({ theme }) => theme.palette.secondary.main};
-    font-weight: lighter;
-    font-size: 1.5rem;
+  @media (min-width: 1024px) {
+    top: 26rem;
+  }
 
-    min-width: 80%;
+  @media (min-width: 1440px) {
+    top: 26.5rem;
+  }
 
-    @media (min-width: 768px) {
-      top: 22rem;
-    }
+  @media (min-width: 2560px) {
+    top: 27rem;
+  }
 
-    @media (min-width: 1024px) {
-      top: 26rem;
-    }
+  @media (min-width: 3860px) {
+    top: 30rem;
+  }
+`;
 
-    @media (min-width: 1440px) {
-      top: 26.5rem;
-    }
+export const StyledTextBox = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  bottom: clamp(0rem, 3vw, 1.8rem);;
+  color: ${({ theme }) => theme.palette.secondary.main};
 
-    @media (min-width: 2560px) {
-      top: 27rem;
-    }
+  width: 60%;
+  max-width: 750px;
+  min-width: 330px;
+  text-align: center;
+  padding: 1rem;
 
-    @media (min-width: 3860px) {
-      top: 30rem;
-    }
-`
+  font-size: clamp(0.8rem, 2vw, 1.5rem);
 
 
+`;
