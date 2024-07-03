@@ -31,7 +31,7 @@ export const SideText = styled.div`
 
   z-index: 10;
   width: 20%;
-  font-size: 1.5rem;
+  font-size: clamp(0.8rem, 1.5vw, 2.5rem);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -56,9 +56,11 @@ export const Title = styled.h1`
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
-  font-size: 5.5rem;
   font-weight: lighter;
 
+  font-size: clamp(4rem, 10vw, 6rem);
+
+/* 
   @media (min-width: 768px) {
     font-size: 7rem;
     top: 4rem;
@@ -82,7 +84,7 @@ export const Title = styled.h1`
   @media (min-width: 3860px) {
     font-size: 7rem;
     top: 11rem;
-  }
+  } */
 `;
 
 export const PhotoContainer = styled.div`
@@ -97,7 +99,10 @@ export const PhotoContainer = styled.div`
   }
 
   @media (max-width: 768px) {
-    width: 45%;
+    width: 30%;
+    img{
+      min-height: 20rem !important;
+    }
   }
 
   @media (min-width: 768px) {
@@ -105,18 +110,12 @@ export const PhotoContainer = styled.div`
   }
 
   @media (min-width: 1024px) {
-    width: 80%;
-  }
-
-  @media (min-width: 1440px) {
-    width: 100%;
+    width: 70%;
   }
 
   @media (min-width: 2560px) {
-    width: 100%;
+    width: 90%;
   }
 
-  @media (min-width: 3860px) {
-    width: 100%;
-  }
+
 `;

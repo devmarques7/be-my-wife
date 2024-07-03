@@ -1,6 +1,6 @@
 import { useState, useContext } from "react";
 import { useTheme } from "@mui/material";
-import { StyledBox, StyledLink, StyledNav, HamburgerIcon, MobileMenu } from "./styleHeader";
+import { StyledHeaderContainer, StyledLink, StyledNav, HamburgerIcon, MobileMenu } from "./styleHeader";
 import { AppContext } from "../../context/AppContext";
 import AppButton from "../AppButton/AppButton";
 import MenuIcon from '@mui/icons-material/Menu';
@@ -51,7 +51,7 @@ const Header: React.FC<IHeaderProps> = () => {
   return (
     <>
       <GlobalStyles isMenuOpen={isMenuOpen} theme={theme}/>
-      <StyledBox theme={theme}>
+      <StyledHeaderContainer theme={theme}>
         <HamburgerIcon $isMenuOpen={isMenuOpen} onClick={toggleMenu}>
           {isMenuOpen ? <CloseIcon /> : <MenuIcon />}
         </HamburgerIcon>
@@ -68,7 +68,7 @@ const Header: React.FC<IHeaderProps> = () => {
             </div>
           </MobileMenu>
         )}
-      </StyledBox>
+      </StyledHeaderContainer>
     </>
   );
 }
