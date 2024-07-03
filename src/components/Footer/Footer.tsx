@@ -22,23 +22,23 @@ const Footer: React.FC<IFooterProps> = ({SOCIAL_MEDIA, copyright}) => {
   const scrollToSection = (id: string) => {
     const element = document.getElementById(id);
     if (element) {
-      window.scrollTo({
-        top: element.offsetTop,
-        behavior: "smooth",
-      });
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   };
 
-  const conditionalRender = (link: string) => {
-    const id = `${link.toLowerCase()}_page`;
+  const conditionalRender = (link: string, index:number) => {
+    let currentHref = ""
+    if(index === 0){currentHref = "home_page"}
+    if(index === 1){currentHref = "countdown_page"}
+    if(index === 2){currentHref = "location_page"}
     return (
       <NavLink
         key={link}
         theme={theme}
-        href={`#${id}`}
+        href={`#${currentHref}`}
         onClick={(e) => {
           e.preventDefault(); // Prevent default link behavior
-          scrollToSection(id);
+          scrollToSection(currentHref);
         }}
       >
         {link}
@@ -55,7 +55,7 @@ const Footer: React.FC<IFooterProps> = ({SOCIAL_MEDIA, copyright}) => {
     >
       <StyledFooter theme={theme}>
         <div className="footer__nav">
-          {NAVBAR.map((link) => conditionalRender(link))}
+          {NAVBAR.map((link, index) => conditionalRender(link, index))}
         </div>
         <Logo className="footer__logo">Be My Wife</Logo>
         <SocialIcons>
