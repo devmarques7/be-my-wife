@@ -11,9 +11,9 @@ import { EffectCoverflow, Pagination, Autoplay } from "swiper/modules";
 import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 
-const Carousel = ({ photos, title, subtitle }: ICarousel) => {
+const Carousel = ({ PHOTOS_CAROUSEL, title, subtitle }: ICarousel) => {
   const theme = useTheme();
-  const slidesPerView = Math.min(photos.length, 2);
+  const slidesPerView = Math.min(PHOTOS_CAROUSEL.length, 2);
 
   // Função para calcular o spaceBetween baseado no tamanho da tela
   const calculateSpaceBetween = () => {
@@ -27,7 +27,6 @@ const Carousel = ({ photos, title, subtitle }: ICarousel) => {
   const [spaceBetween, setSpaceBetween] = useState(calculateSpaceBetween());
 
   useEffect(() => {
-    console.log(spaceBetween)
     const handleResize = () => {
       setSpaceBetween(calculateSpaceBetween());
     };
@@ -66,16 +65,16 @@ const Carousel = ({ photos, title, subtitle }: ICarousel) => {
           swiper.slides[swiper.activeIndex].classList.add('swiper-slide-active-text');
         }}
       >
-        {photos.map((photo, index) => (
+        {PHOTOS_CAROUSEL.map((photo, index) => (
           <SwiperSlide key={index} style={{ width: '25rem', minWidth: "25rem" }}>
             <a className="tag_slide_image" rel="noopener noreferrer">
-              <img src={photo.src} alt="slide_image" />
+              <img src={photo.SRC} alt="slide_image" />
             </a>
           </SwiperSlide>
         ))}
       </Swiper>
       <StyledTextBox theme={theme}>
-        <p>{photos.length > 0 && photos[0].description}</p>
+        <p>{PHOTOS_CAROUSEL.length > 0 && PHOTOS_CAROUSEL[0].DESCRIPTION}</p>
       </StyledTextBox>
     </StyledCarousel>
   );

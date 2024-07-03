@@ -12,7 +12,7 @@ export interface IHeaderProps {}
 const Header: React.FC<IHeaderProps> = () => {
   const theme = useTheme();
   const { webContent } = useContext(AppContext);
-  const { TITLE, NAVBAR } = webContent.HEADER;
+  const { TITLE, NAVBAR, TALK_TO_US } = webContent.HEADER;
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -57,7 +57,7 @@ const Header: React.FC<IHeaderProps> = () => {
         </HamburgerIcon>
         <StyledNav className="desktop-nav">{NAVBAR.map((link) => conditionalRender(link))}</StyledNav>
         <h1>{TITLE}</h1>
-        <AppButton ghost text="Talk to us" navigateTo="https://wa.me/message/DWXD446BLNVLH1" />
+        <AppButton ghost text={TALK_TO_US.TEXT} navigateTo={TALK_TO_US.URL}/>
         {isMenuOpen && (
           <MobileMenu className={isMenuOpen ? 'open' : ''} theme={theme}>
             <div className="mobile-menu__header">

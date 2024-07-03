@@ -29,7 +29,7 @@ export const StyledFooter = styled(Box)`
 `;
 
 export const NavLink = styled(Link)`
-  font-size: ${({ theme }) => theme.typography.p.fontSize}px !important;
+  font-size: clamp(0.8rem, 1.5vw, 2.5rem) !important;
   color: ${({ theme }) => theme.palette.text.primary} !important;
   cursor: pointer;
 
@@ -41,13 +41,13 @@ export const NavLink = styled(Link)`
 `;
 
 export const Logo = styled.div`
-  font-size: 2rem;
+  font-size: clamp(1.5rem, 2vw, 6rem) !important;
   font-weight: bold;
   margin-bottom: 10px;
 `;
 
 export const Rights = styled.div`
-  font-size: 1rem;
+  font-size: clamp(0.5rem, 1vw, 3rem) !important;
   color: ${({ theme }) => theme.palette.text.secondary};
 `;
 
@@ -64,6 +64,6 @@ export const SocialIcons = styled.div`
   }
 
   svg {
-    font-size: 2rem;
+    font-size: clamp(1.5rem, 2vw, 6rem) !important;
   }
 `;
