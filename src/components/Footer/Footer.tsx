@@ -6,9 +6,15 @@ import { AppContext } from "../../context/AppContext";
 import InstagramIcon from '@mui/icons-material/Instagram';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 
-export interface IFooterProps {}
+export interface IFooterProps {
+  SOCIAL_MEDIA: {
+    INSTAGRAM: string;
+    WHATSAPP: string;
+}
+copyright: string;
+}
 
-const Footer: React.FC<IFooterProps> = () => {
+const Footer: React.FC<IFooterProps> = ({SOCIAL_MEDIA, copyright}) => {
   const theme = useTheme();
   const { webContent } = useContext(AppContext);
   const { NAVBAR } = webContent.HEADER;
@@ -53,14 +59,14 @@ const Footer: React.FC<IFooterProps> = () => {
         </div>
         <Logo className="footer__logo">Be My Wife</Logo>
         <SocialIcons>
-          <a href="https://www.instagram.com/danieegaby_/" target="_blank" rel="noopener noreferrer">
+          <a href={SOCIAL_MEDIA.INSTAGRAM} target="_blank" rel="noopener noreferrer">
             <InstagramIcon style={{ color: 'black' }} />
           </a>
-          <a href="https://wa.me/message/DWXD446BLNVLH1" target="_blank" rel="noopener noreferrer">
+          <a href={SOCIAL_MEDIA.WHATSAPP} target="_blank" rel="noopener noreferrer">
             <WhatsAppIcon style={{ color: 'black' }} />
           </a>
         </SocialIcons>
-        <Rights theme={theme} className="footer__rights">All rights reserved &copy; 2024 Dany & Gaby</Rights>
+        <Rights theme={theme} className="footer__rights">{copyright}</Rights>
       </StyledFooter>
     </Container>
   );

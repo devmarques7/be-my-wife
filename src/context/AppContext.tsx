@@ -14,8 +14,8 @@ interface IAppContext {
 export const AppContext = createContext<IAppContext>({} as IAppContext);
 
 const AppContextProvider = ({ children }: ContextsProps) => {
-  const [language, setLanguage] = useState("EN");
-  const [webContent, setWebContent] = useState(WEB_SITE_CONTENT_EN);
+  const [language, setLanguage] = useState("PT");
+  const [webContent, setWebContent] = useState(WEB_SITE_CONTENT_PT);
   const [policy, setPolicy] = useState(true);
 
   const handleLanguage = (event: any): void => {
