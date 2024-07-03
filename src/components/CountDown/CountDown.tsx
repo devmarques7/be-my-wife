@@ -4,7 +4,16 @@ import { StyledCountDown, CountdownContainer, StyledTitle } from "./styleCountDo
 import Container from "../Container/Container";
 import TimeSegment from "./TimeSegment/TimeSegment";
 
-export interface ICountDownProps {}
+export interface ICountDownProps {
+  title: string;
+  datetime: string;
+  time_fields: {
+    days: string;
+    hours: string;
+    minutes: string;
+    seconds: string;
+}
+}
 
 // Helper function to calculate time remaining
 const calculateTimeLeft = (eventDate: Date) => {
@@ -27,12 +36,12 @@ const calculateTimeLeft = (eventDate: Date) => {
   return timeLeft;
 };
 
-const CountDown: React.FC<ICountDownProps> = () => {
+const CountDown: React.FC<ICountDownProps> = ({title, datetime, time_fields}) => {
   const theme = useTheme();
 
   // Set your event date here
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const eventDate = new Date("2025-01-06T23:59:59");
+  const eventDate = new Date(datetime);
 
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(eventDate));
 
@@ -48,12 +57,12 @@ const CountDown: React.FC<ICountDownProps> = () => {
   return (
     <Container id="countdown_page" backgroundType="image" backgroundSrc="/source/g&d.jpg">
       <StyledCountDown theme={theme}>
-        <StyledTitle theme={theme}>Let the countdown begin</StyledTitle>
+        <StyledTitle theme={theme}>{title}</StyledTitle>
         <CountdownContainer>
-          <TimeSegment value={timeLeft.days} label="Days" />
-          <TimeSegment value={timeLeft.hours} label="Hours" />
-          <TimeSegment value={timeLeft.minutes} label="Minutes" />
-          <TimeSegment value={timeLeft.seconds} label="Seconds" />
+          <TimeSegment value={timeLeft.days} label={time_fields.days}/>
+          <TimeSegment value={timeLeft.hours} label={time_fields.hours}/>
+          <TimeSegment value={timeLeft.minutes} label={time_fields.minutes}/>
+          <TimeSegment value={timeLeft.seconds} label={time_fields.seconds} />
         </CountdownContainer>
       </StyledCountDown>
     </Container>

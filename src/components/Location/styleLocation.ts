@@ -59,32 +59,6 @@ export const Title = styled.h1`
   font-weight: lighter;
 
   font-size: clamp(4rem, 10vw, 6rem);
-
-/* 
-  @media (min-width: 768px) {
-    font-size: 7rem;
-    top: 4rem;
-  }
-
-  @media (min-width: 1024px) {
-    font-size: 7rem;
-    top: 4rem;
-  }
-
-  @media (min-width: 1440px) {
-    font-size: 8rem;
-    top: 0rem;
-  }
-
-  @media (min-width: 2560px) {
-    font-size: 6rem;
-    top: 7rem;
-  }
-
-  @media (min-width: 3860px) {
-    font-size: 7rem;
-    top: 11rem;
-  } */
 `;
 
 export const PhotoContainer = styled.div`
@@ -116,6 +90,5 @@ export const PhotoContainer = styled.div`
   @media (min-width: 2560px) {
     width: 90%;
   }
-
 
 `;

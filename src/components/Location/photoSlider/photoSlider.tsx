@@ -6,10 +6,12 @@ import { Autoplay } from "swiper/modules";
 import { StyledPhotoSlider } from "./stylePhotoSlider";
 
 interface PhotoSliderProps {
-  photos: { src: string }[];
+  PHOTOS_LOCATION: {
+    SRC: string;
+}[]
 }
 
-const PhotoSlider: React.FC<PhotoSliderProps> = ({ photos }) => {
+const PhotoSlider: React.FC<PhotoSliderProps> = ({ PHOTOS_LOCATION }) => {
   return (
     <StyledPhotoSlider>
       <Swiper
@@ -19,9 +21,9 @@ const PhotoSlider: React.FC<PhotoSliderProps> = ({ photos }) => {
         autoplay={{ delay: 5000 }}
         modules={[Autoplay]}
       >
-        {photos.map((photo, index) => (
+        {PHOTOS_LOCATION.map((photo, index) => (
           <SwiperSlide key={index}>
-            <img src={photo.src} alt={`slide_${index}`} />
+            <img src={photo.SRC} alt={`slide_${index}`} />
           </SwiperSlide>
         ))}
       </Swiper>
