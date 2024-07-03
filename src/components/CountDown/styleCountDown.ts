@@ -13,37 +13,17 @@ export const StyledCountDown = styled(Box)`
 `;
 
 export const StyledTitle = styled.h1`
-  font-size: 4rem;
   margin-bottom: 1rem;
   color: ${({ theme }) => theme.palette.primary.main};
-  @media (max-width: 768px) {
-    font-size: 4rem;
-  }
-
-  @media (min-width: 768px) {
-    font-size: 4rem;
-  }
-
-  @media (min-width: 1024px) {
-    font-size: 8rem;
-  }
-
-  @media (min-width: 1440px) {
-    font-size: 8.5rem;
-  }
-
-  @media (min-width: 2560px) {
-    font-size: 9rem;
-  }
-
-  @media (min-width: 3860px) {
-    font-size: 11rem;
-  }
+  font-size: clamp(0.8rem, 2vw, 1.5rem);
 `;
 
 export const CountdownContainer = styled.div`
   display: flex;
-  gap: 8rem;
+  justify-content: space-between;
+  width: 60%;
+  max-width: 600px;
+  margin: 0 auto;
 `;
 
 export const StyledTimeSegment = styled.div`
@@ -53,57 +33,11 @@ export const StyledTimeSegment = styled.div`
 `;
 
 export const StyledNumber = styled.span`
-  font-size: 3.5rem;
   color: ${({ theme }) => theme.palette.primary.main};
-  @media (max-width: 768px) {
-    font-size: 2.5rem;
-  }
-
-  @media (min-width: 768px) {
-    font-size: 4rem;
-  }
-
-  @media (min-width: 1024px) {
-    font-size: 6rem;
-  }
-
-  @media (min-width: 1440px) {
-    font-size: 6.5rem;
-  }
-
-  @media (min-width: 2560px) {
-    font-size: 7rem;
-  }
-
-  @media (min-width: 3860px) {
-    font-size: 9rem;
-  }
+  font-size: clamp(3.3rem, 4vw, 6rem);
 `;
 
 export const StyledLabel = styled.span`
-  font-size: 1.5rem;
   color: ${({ theme }) => theme.palette.primary.main};
-  @media (max-width: 768px) {
-    font-size: 1.5rem;
-  }
-
-  @media (min-width: 768px) {
-    font-size: 2rem;
-  }
-
-  @media (min-width: 1024px) {
-    font-size: 2rem;
-  }
-
-  @media (min-width: 1440px) {
-    font-size: 2.5rem;
-  }
-
-  @media (min-width: 2560px) {
-    font-size: 3rem;
-  }
-
-  @media (min-width: 3860px) {
-    font-size: 6rem;
-  }
+  font-size: clamp(1rem, 2vw, 3.5rem) !important;
 `;
