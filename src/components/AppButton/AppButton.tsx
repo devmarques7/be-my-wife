@@ -4,7 +4,7 @@ import { StyledAppButton } from "./styleAppButton";
 export interface IAppButtonProps {
   text: string;
   className?: string;
-  type?: "primary" | "dashed";
+  type?: "primary" | "dashed" | "outlined" ;
   navigateTo?: string;
   ghost?: boolean | undefined;
 }

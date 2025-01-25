@@ -8,11 +8,11 @@ export const WEB_SITE_CONTENT_PT = {
     LANGUAGES: ["EN", "PT"],
     TALK_TO_US: {
       TEXT: "Fale Conosco",
-      URL: "https://wa.me/message/OFAGZCB6MIRII1"
+      URL: "https://wa.me/+31633456766?text=Eu%20quero%20confirmar%20minha%20presença"
     }
   },
   CAROUSEL: {
-    TITLE_CAROUSEL:"07 . 01 . 2025",
+    TITLE_CAROUSEL:"10 . 12 . 2025",
     PHOTOS_CAROUSEL: [
       {
         SRC:"/source/g&d3.jpg",
@@ -34,9 +34,13 @@ export const WEB_SITE_CONTENT_PT = {
       }
     ]
   },
+  CONFIRME_PRESENCE: {
+    TEXT: "Confirme sua presença",
+    URL: "https://wa.me/+31633456766?text=Eu%20quero%20confirmar%20minha%20presença"
+  },
   COUNTDOWN:{
     TITLE_COUNTDOWN:"Que comece a contagem regressiva",
-    DATETIME_COUNTDOWN:"2025-01-06T23:59:59",
+    DATETIME_COUNTDOWN:"2025-12-09T23:59:59",
     TIME_FIELDS: {
       days: "Dias",
       hours: "Horas",
@@ -49,6 +53,7 @@ export const WEB_SITE_CONTENT_PT = {
     LEFT_TEXT:"Villa Vezanne - O começo de uma historia. . .",
     RIGHT_TEXT:"R. Benedito Fontana, 510 - Mairiporã, SP, 07627-200",
     URL_LOCATION: "https://www.instagram.com/villavezzane/",
+    BUTTON_ACTION: "Veja o Local",
     PHOTOS_LOCATION:[
       {SRC:"/source/villa.jpg"},
       {SRC:"/source/villa2.jpg"},

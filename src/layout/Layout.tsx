@@ -17,7 +17,7 @@ export interface ILayoutProps {
 const Layout: React.FC<ILayoutProps> = () => {
   const { webContent } = useContext(AppContext);
   const { PHOTOS_CAROUSEL, TITLE_CAROUSEL } = webContent.CAROUSEL;
-  const { PHOTOS_LOCATION, TITLE_LOCATION, LEFT_TEXT, RIGHT_TEXT, URL_LOCATION } = webContent.LOCATION;
+  const { PHOTOS_LOCATION, TITLE_LOCATION, LEFT_TEXT, RIGHT_TEXT, URL_LOCATION, BUTTON_ACTION } = webContent.LOCATION;
   const { TITLE_COUNTDOWN, DATETIME_COUNTDOWN, TIME_FIELDS } = webContent.COUNTDOWN;
   const { SOCIAL_MEDIA, COPYRIGHT } = webContent.FOOTER;
 
@@ -26,6 +26,7 @@ const Layout: React.FC<ILayoutProps> = () => {
             <Privacy/>
             <Header/>
             <Carousel
+                CONFIRME_PRESENCE={webContent.CONFIRME_PRESENCE}
                 PHOTOS_CAROUSEL={PHOTOS_CAROUSEL}
                 title={TITLE_CAROUSEL}
                 subtitle=""
@@ -37,6 +38,7 @@ const Layout: React.FC<ILayoutProps> = () => {
                 rightText={RIGHT_TEXT}
                 url={URL_LOCATION}
                 PHOTOS_LOCATION={PHOTOS_LOCATION}
+                BUTTON_ACTION={BUTTON_ACTION}
                 />
             <Footer SOCIAL_MEDIA={SOCIAL_MEDIA} copyright={COPYRIGHT}  />
         </StyledLayout>

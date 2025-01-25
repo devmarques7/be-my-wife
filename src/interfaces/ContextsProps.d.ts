@@ -22,6 +22,10 @@ CAROUSEL: {
       DESCRIPTION: string;
   }[];
 }
+CONFIRME_PRESENCE: {
+  TEXT: string;
+  URL: string;
+}
 COUNTDOWN: {
   TITLE_COUNTDOWN: string;
   DATETIME_COUNTDOWN: string;
@@ -37,6 +41,7 @@ LOCATION: {
   LEFT_TEXT: string;
   RIGHT_TEXT: string;
   URL_LOCATION: string;
+  BUTTON_ACTION: string;
   PHOTOS_LOCATION: {
       SRC: string;
   }[];

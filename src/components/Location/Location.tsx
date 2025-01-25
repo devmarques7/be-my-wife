@@ -12,10 +12,11 @@ export interface ILocationProps {
   url: string;
   PHOTOS_LOCATION: {
     SRC: string;
-}[]
+  }[]
+  BUTTON_ACTION: string;
 }
 
-const Location: React.FC<ILocationProps> = ({ title, leftText, rightText, PHOTOS_LOCATION, url }) => {
+const Location: React.FC<ILocationProps> = ({ title, leftText, rightText, PHOTOS_LOCATION, url, BUTTON_ACTION }) => {
   const theme = useTheme();
 
   return (
@@ -27,7 +28,7 @@ const Location: React.FC<ILocationProps> = ({ title, leftText, rightText, PHOTOS
           <PhotoContainer theme={theme} className="location__photo-container">
             <PhotoSlider PHOTOS_LOCATION={PHOTOS_LOCATION} />
           </PhotoContainer>
-          <AppButton className="location__app_button" text="Visit Location" navigateTo={url}></AppButton>
+          <AppButton className="location__app_button" text={BUTTON_ACTION} navigateTo={url}></AppButton>
         </div>
         <SideText theme={theme} className="location__side-text location__side-text--right">{rightText}</SideText>
       </StyledLocation>
