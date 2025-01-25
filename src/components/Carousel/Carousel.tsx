@@ -10,8 +10,9 @@ import { ICarousel } from "../../interfaces/ICarousel";
 import { EffectCoverflow, Pagination, Autoplay } from "swiper/modules";
 import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
+import AppButton from "../AppButton/AppButton";
 
-const Carousel = ({ PHOTOS_CAROUSEL, title, subtitle }: ICarousel) => {
+const Carousel = ({ PHOTOS_CAROUSEL, CONFIRME_PRESENCE, title, subtitle }: ICarousel) => {
   const theme = useTheme();
   const slidesPerView = Math.min(PHOTOS_CAROUSEL.length, 2);
 
@@ -74,6 +75,7 @@ const Carousel = ({ PHOTOS_CAROUSEL, title, subtitle }: ICarousel) => {
         ))}
       </Swiper>
       <StyledTextBox theme={theme}>
+        <AppButton ghost text={CONFIRME_PRESENCE.TEXT} type="primary" navigateTo={CONFIRME_PRESENCE.URL}/>
         <p>{PHOTOS_CAROUSEL.length > 0 && PHOTOS_CAROUSEL[0].DESCRIPTION}</p>
       </StyledTextBox>
     </StyledCarousel>

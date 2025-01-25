@@ -8,11 +8,11 @@ export const WEB_SITE_CONTENT_EN = {
     LANGUAGES: ["EN", "PT"],
     TALK_TO_US: {
       TEXT: "Talk to us",
-      URL: "https://wa.me/message/OFAGZCB6MIRII1"
+      URL: "https://wa.me/+31633456766?text=Eu%20quero%20confirmar%20minha%20presença"
     }
   },
   CAROUSEL: {
-    TITLE_CAROUSEL:"07 . 01 . 2025",
+    TITLE_CAROUSEL:"10 . 12 . 2025",
     PHOTOS_CAROUSEL: [
       {
         SRC:"/source/g&d3.jpg",
@@ -34,6 +34,10 @@ export const WEB_SITE_CONTENT_EN = {
       }
     ]
   },
+  CONFIRME_PRESENCE: {
+    TEXT: "Confirm your presence",
+    URL: "https://wa.me/+31633456766?text=Eu%20quero%20confirmar%20minha%20presença"
+  },
   COUNTDOWN:{
     TITLE_COUNTDOWN:"Let the countdown begin",
     DATETIME_COUNTDOWN:"2025-01-06T23:59:59",
@@ -49,6 +53,7 @@ export const WEB_SITE_CONTENT_EN = {
     LEFT_TEXT:"Villa Vezanne - Where our dream will become reality . . .",
     RIGHT_TEXT:"R. Benedito Fontana, 510 - Mairiporã, SP, 07627-200",
     URL_LOCATION: "https://www.instagram.com/villavezzane/",
+    BUTTON_ACTION: "Visit Location",
     PHOTOS_LOCATION:[
       {SRC:"/source/villa.jpg"},
       {SRC:"/source/villa2.jpg"},
