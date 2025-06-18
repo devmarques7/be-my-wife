@@ -4,6 +4,7 @@ import { StyledPresents } from "../components/Presents/stylePresents";
 import Container from "../components/Container/Container";
 import CompactCountDown from "../components/CountDown/CompactCountDown";
 import { AppContext } from "../context/AppContext";
+import { useCart } from "../context/CartContext";
 import { 
   Card, 
   CardContent, 
@@ -21,7 +22,6 @@ import {
 } from "@mui/material";
 import { IPresent } from "../types/presents";
 import PresentModal from "../components/PresentModal/PresentModal";
-import SelectPresentModal from "../components/SelectPresentModal/SelectPresentModal";
 import AppButton from "../components/AppButton/AppButton";
 import Header from "../components/Header/Header";
 import Privacy from "../components/Privacy Policy/privacyPolicy";
@@ -31,12 +31,12 @@ import PresentFilters from '../components/PresentFilters/PresentFilters';
 const PresentsPage: React.FC = () => {
   const theme = useTheme();
   const { webContent } = React.useContext(AppContext);
+  const { addToCart, isProductInCart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("price-asc");
   const [availabilityFilter, setAvailabilityFilter] = useState<string>("all");
   const [selectedPresent, setSelectedPresent] = useState<IPresent | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectModalOpen, setSelectModalOpen] = useState(false);
   const [presents, setPresents] = useState<IPresent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -140,27 +140,9 @@ const PresentsPage: React.FC = () => {
     return result;
   }, [filteredAndSortedPresents, selectedCategory, availableCategories]);
 
-  const handlePresentSelect = async (name: string, email: string) => {
-    if (selectedPresent) {
-      try {
-        await productService.purchasePresent(selectedPresent.id, name, email);
-        await loadPresents(); // Recarrega a lista após a compra
-        setSelectModalOpen(false);
-      } catch (error) {
-        console.error('Error purchasing present:', error);
-        alert('Erro ao registrar a compra. Por favor, tente novamente.');
-      }
-    }
-  };
-
   const handleOpenDetails = (present: IPresent) => {
     setSelectedPresent(present);
     setModalOpen(true);
-  };
-
-  const handleOpenSelection = (present: IPresent) => {
-    setSelectedPresent(present);
-    setSelectModalOpen(true);
   };
 
   if (!webContent) {
@@ -273,19 +255,23 @@ const PresentsPage: React.FC = () => {
                           >
                             € {(present.price / 100).toFixed(2)}
                           </Typography>
-                          <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                             <AppButton
                               text="Ver Detalhes"
                               type="primary"
                               onClick={() => handleOpenDetails(present)}
                             />
-                            {!present.isSelected && (
-                              <AppButton
-                                text="Selecionar"
-                                type="dashed"
-                                onClick={() => handleOpenSelection(present)}
-                              />
-                            )}
+                            <AppButton
+                              text={isProductInCart(present.id) ? "Já no Carrinho" : "Adicionar ao Carrinho"}
+                              type="dashed"
+                              onClick={() => {
+                                const success = addToCart(present);
+                                if (!success) {
+                                  // Produto já está no carrinho, pode mostrar feedback aqui se desejar
+                                }
+                              }}
+                              disabled={isProductInCart(present.id)}
+                            />
                           </Box>
                         </CardContent>
                       </Card>
@@ -309,18 +295,8 @@ const PresentsPage: React.FC = () => {
           open={modalOpen}
           onClose={() => setModalOpen(false)}
           present={selectedPresent}
-          onSelect={() => {
-            setModalOpen(false);
-            setSelectModalOpen(true);
-          }}
+          onSelect={() => {}}
           isSelected={selectedPresent?.isSelected || false}
-        />
-
-        <SelectPresentModal
-          open={selectModalOpen}
-          onClose={() => setSelectModalOpen(false)}
-          present={selectedPresent}
-          onConfirm={handlePresentSelect}
         />
       </StyledPresents>
     </Container>
