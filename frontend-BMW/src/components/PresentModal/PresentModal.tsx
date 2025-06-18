@@ -1,6 +1,7 @@
 import React from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Box, Grid, Divider, useTheme } from '@mui/material';
 import { IPresent } from '../../types/presents';
+import { useCart } from '../../context/CartContext';
 import AppButton from '../AppButton/AppButton';
 
 interface PresentModalProps {
@@ -19,6 +20,7 @@ const PresentModal: React.FC<PresentModalProps> = ({
   isSelected
 }) => {
   const theme = useTheme();
+  const { addToCart, isProductInCart } = useCart();
   
   if (!present) return null;
 
@@ -181,19 +183,23 @@ const PresentModal: React.FC<PresentModalProps> = ({
           </Grid>
         </Grid>
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2 }}>
+      <DialogActions sx={{ px: 3, py: 2, gap: 1, flexWrap: 'wrap' }}>
         <AppButton
           text="Fechar"
           type="dashed"
           onClick={onClose}
         />
-        {!isSelected && (
-          <AppButton
-            text="Selecionar Presente"
-            type="primary"
-            onClick={onSelect}
-          />
-        )}
+        <AppButton
+          text={isProductInCart(present.id) ? "Já no Carrinho" : "Adicionar ao Carrinho"}
+          type="primary"
+          onClick={() => {
+            const success = addToCart(present);
+            if (success) {
+              onClose();
+            }
+          }}
+          disabled={isProductInCart(present.id)}
+        />
       </DialogActions>
     </Dialog>
   );
