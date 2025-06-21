@@ -9,7 +9,7 @@ const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 // Função para tentar uma operação com retry
 const retryOperation = async (operation, maxRetries = 3, delay = 1000) => {
   let lastError;
-  
+
   for (let i = 0; i < maxRetries; i++) {
     try {
       return await operation();
@@ -74,8 +74,8 @@ router.post('/presents', async (req, res) => {
 
     // Validação dos campos obrigatórios
     if (!name || !price) {
-      return res.status(400).json({ 
-        error: 'Nome e preço são campos obrigatórios' 
+      return res.status(400).json({
+        error: 'Nome e preço são campos obrigatórios'
       });
     }
 
@@ -83,7 +83,7 @@ router.post('/presents', async (req, res) => {
       name,
       description: description || 'Presente para os noivos', // Garante que description nunca será vazio
       images: image ? [image] : undefined,
-      metadata: { 
+      metadata: {
         category: category || 'Outros',
         is_selected: 'false'
       },
@@ -116,32 +116,32 @@ router.post('/presents/batch', async (req, res) => {
     }
 
     const createdProducts = [];
-    
+
     // Criar produtos sequencialmente com delay para evitar rate limit
     for (const productData of products) {
-      const { 
-        name, 
+      const {
+        name,
         description = 'Presente para os noivos',
-        price, 
-        category, 
-        image, 
-        currency = 'brl' 
+        price,
+        category,
+        image,
+        currency = 'brl'
       } = productData;
 
       // Validação dos campos obrigatórios
       if (!name || !price) {
-        return res.status(400).json({ 
-          error: `Nome e preço são campos obrigatórios. Produto com erro: ${name || 'sem nome'}` 
+        return res.status(400).json({
+          error: `Nome e preço são campos obrigatórios. Produto com erro: ${name || 'sem nome'}`
         });
       }
-      
+
       await wait(1000); // Espera 1 segundo entre cada criação
-      
+
       const stripeProductData = {
         name,
         description: description || 'Presente para os noivos', // Garante que description nunca será vazio
         images: image ? [image] : undefined,
-        metadata: { 
+        metadata: {
           category: category || 'Outros',
           is_selected: 'false'
         },
@@ -169,7 +169,7 @@ router.post('/presents/batch', async (req, res) => {
 router.put('/presents/:id', async (req, res) => {
   try {
     const { name, description, price, category, image, active } = req.body;
-    
+
     const product = await retryOperation(async () => {
       // Atualizar produto
       const updateData = {
@@ -205,7 +205,7 @@ router.put('/presents/:id', async (req, res) => {
 router.post('/presents/:id/purchase', async (req, res) => {
   try {
     const { buyerName, buyerEmail } = req.body;
-    
+
     const product = await retryOperation(async () => {
       return await stripe.products.update(req.params.id, {
         metadata: {
@@ -238,4 +238,77 @@ router.get('/presents/purchased', async (req, res) => {
   }
 });
 
-module.exports = router; 
+router.post('/presents/purchase', async (req, res) => {
+  try {
+    const { productIds } = req.body;
+
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+      return res.status(400).json({ error: 'Forneça uma lista válida de IDs de produtos' });
+    }
+
+    // Buscar os produtos na stripe
+    const products = await stripe.products.list({
+      ids: productIds,
+      expand: ['data.default_price'],
+    });
+
+    // Criar os line items para o Checkout
+    const lineItems = products.data.map(product => ({
+      price: product.default_price.id,
+      quantity: 1,
+    }));
+
+    // Criar a sessão de Checkout
+    const session = await stripe.checkout.sessions.create({
+      line_items: lineItems,
+      mode: 'payment',
+      success_url: `${process.env.FRONT_BASE_URL}/success`,
+      cancel_url: `${process.env.FRONT_BASE_URL}/checkout`,
+      metadata: {
+        productIds: productIds.join(','), // Armazenar os IDs dos produtos na metadata
+      }
+    });
+
+    for (const item of products.data) {
+      await stripe.products.update(item.id, {
+        metadata: {
+          ...item.metadata,
+          is_reserved: 'true'
+        }
+      });
+    }
+
+    res.json({ url: session.url });
+  } catch (error) {
+    console.error('Erro ao criar sessão de Checkout:', error);
+    res.status(500).json({ error: 'Erro ao criar sessão de Checkout' });
+  }
+});
+
+// Webhook para lidar com eventos do Stripe
+async function webhookHandler(req, res) {
+  const sig = req.headers['stripe-signature'];
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET_KEY);
+  } catch (err) {
+    console.error("entrou no erro de constructEvent",)
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const productIds = session.metadata.productIds.split(',');
+
+    // Atualizar o status dos produtos para inativo
+    for (const productId of productIds) {
+      await stripe.products.update(productId, { active: false });
+    }
+  }
+
+  res.json({ received: true });
+};
+
+module.exports = { router, webhookHandler };
