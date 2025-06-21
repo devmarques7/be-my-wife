@@ -120,5 +120,18 @@ export const productService = {
       console.error('Error initiating checkout:', error);
       throw error;
     }
+  },
+
+    // Iniciar checkout do Stripe
+  async presentPurchase(productIds: string[]): Promise<string> {
+    try {
+      const response = await api.post(`/api/presents/purchase`, { productIds });
+      const { url } = response.data;
+
+      return url;
+    } catch (error) {
+      console.error('Error initiating checkout:', error);
+      throw error;
+    }
   }
 }; 

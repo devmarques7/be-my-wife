@@ -35,13 +35,14 @@ import { AppContext } from '../context/AppContext';
 import AppButton from '../components/AppButton/AppButton';
 import ProductSuggestions from '../components/ProductSuggestions/ProductSuggestions';
 import { ICheckoutForm } from '../types/cart';
+import { productService } from '../services/productService';
 
 const CheckoutPage: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { cart, clearCart } = useCart();
   const { webContent } = useContext(AppContext);
-  
+
   const [formData, setFormData] = useState<ICheckoutForm>({
     name: '',
     email: '',
@@ -51,7 +52,7 @@ const CheckoutPage: React.FC = () => {
     zipCode: '',
     paymentMethod: 'card'
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -63,7 +64,7 @@ const CheckoutPage: React.FC = () => {
       ...prev,
       [field]: event.target.value
     }));
-    
+
     // Limpar erro do campo quando o usuário começar a digitar
     if (errors[field]) {
       setErrors(prev => ({
@@ -90,24 +91,26 @@ const CheckoutPage: React.FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+    console.log()
     if (!validateForm()) return;
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // Simular chamada de API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      // await new Promise(resolve => setTimeout(resolve, 2000));
+      const presentIds = cart.items.map(item => item.presentId)
+      const paymentUrl = await productService.presentPurchase(presentIds)
+
       // Limpar carrinho após compra bem-sucedida
       clearCart();
       setSubmitted(true);
-      
+
       // Redirecionar após alguns segundos
       setTimeout(() => {
-        navigate('/');
+        window.location.href = paymentUrl;
       }, 3000);
-      
+
     } catch (error) {
       console.error('Erro ao processar pedido:', error);
     } finally {
@@ -119,11 +122,11 @@ const CheckoutPage: React.FC = () => {
     return (
       <Container id="checkout_page" backgroundType="color" backgroundSrc={theme.palette.primary.main}>
         <Header />
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
           minHeight: '50vh',
           textAlign: 'center',
           p: 3
@@ -148,11 +151,11 @@ const CheckoutPage: React.FC = () => {
     return (
       <Container id="checkout_page" backgroundType="color" backgroundSrc={theme.palette.primary.main}>
         <Header />
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          justifyContent: 'center', 
+        <Box sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
           minHeight: '50vh',
           textAlign: 'center',
           p: 3
@@ -196,7 +199,7 @@ const CheckoutPage: React.FC = () => {
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                 Informações de Entrega
               </Typography>
-              
+
               <form onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
                   <Grid item xs={12} sm={6}>
@@ -210,7 +213,7 @@ const CheckoutPage: React.FC = () => {
                       required
                     />
                   </Grid>
-                  
+
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -223,7 +226,7 @@ const CheckoutPage: React.FC = () => {
                       required
                     />
                   </Grid>
-                  
+
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -235,7 +238,7 @@ const CheckoutPage: React.FC = () => {
                       required
                     />
                   </Grid>
-                  
+
                   <Grid item xs={12} sm={6}>
                     <TextField
                       fullWidth
@@ -247,7 +250,7 @@ const CheckoutPage: React.FC = () => {
                       required
                     />
                   </Grid>
-                  
+
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
@@ -259,7 +262,7 @@ const CheckoutPage: React.FC = () => {
                       required
                     />
                   </Grid>
-                  
+
                   <Grid item xs={12}>
                     <TextField
                       fullWidth
@@ -280,7 +283,7 @@ const CheckoutPage: React.FC = () => {
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                 Método de Pagamento
               </Typography>
-              
+
               <FormControl component="fieldset">
                 <RadioGroup
                   value={formData.paymentMethod}
@@ -327,7 +330,7 @@ const CheckoutPage: React.FC = () => {
               <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
                 Resumo do Pedido
               </Typography>
-              
+
               <List sx={{ p: 0 }}>
                 {cart.items.map((item, index) => (
                   <React.Fragment key={item.id}>
@@ -354,16 +357,16 @@ const CheckoutPage: React.FC = () => {
                   </React.Fragment>
                 ))}
               </List>
-              
+
               <Divider sx={{ my: 2 }} />
-              
+
               <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
                 <Typography variant="h6">Total:</Typography>
                 <Typography variant="h6" sx={{ fontWeight: 600 }}>
                   € {(cart.total / 100).toFixed(2)}
                 </Typography>
               </Box>
-              
+
               <Button
                 variant="contained"
                 fullWidth
@@ -383,9 +386,9 @@ const CheckoutPage: React.FC = () => {
             </Paper>
           </Grid>
         </Grid>
-        
+
         {/* Sugestões de Produtos */}
-        <ProductSuggestions 
+        <ProductSuggestions
           excludeIds={cart.items.map(item => item.presentId)}
           maxItems={4}
         />

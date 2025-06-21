@@ -3,6 +3,7 @@ import { AppThemeProvider } from "./theme/themeProvider";
 import AppContextProvider from "./context/AppContext";
 import { CartProvider, useCart } from "./context/CartContext";
 import Layout from "./layout/Layout";
+import SuccessPage from "./pages/SuccessPage";
 import PresentsPage from "./pages/PresentsPage";
 import CheckoutPage from "./pages/CheckoutPage";
 import LoginPage from './pages/LoginPage';
@@ -12,12 +13,13 @@ import CartNotification from './components/CartNotification/CartNotification';
 
 const AppContent: React.FC = () => {
   const { toggleCart } = useCart();
-  
+
   return (
     <>
       <Routes>
         <Route path="/" element={<Layout />} />
         <Route path="/presents" element={<PresentsPage />} />
+        <Route path="/success" element={<SuccessPage />} />
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/admin" element={<AdminPage />} />
