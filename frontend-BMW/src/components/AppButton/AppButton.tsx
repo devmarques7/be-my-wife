@@ -10,6 +10,7 @@ export interface IAppButtonProps {
   navigateTo?: string;
   onClick?: () => void;
   disabled?: boolean;
+  fullWidth?: boolean;
 }
 
 const AppButton: React.FC<IAppButtonProps> = ({ 
@@ -18,7 +19,8 @@ const AppButton: React.FC<IAppButtonProps> = ({
   type = "primary", 
   navigateTo, 
   onClick, 
-  disabled 
+  disabled,
+  fullWidth = false
 }) => {
   const theme = useTheme();
   const navigate = useNavigate();
@@ -40,6 +42,7 @@ const AppButton: React.FC<IAppButtonProps> = ({
       type={type}
       onClick={handleClick}
       disabled={disabled}
+      fullWidth={fullWidth}
     >
       {text}
     </StyledAppButton>

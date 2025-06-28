@@ -12,38 +12,132 @@ interface CreatePresentInput {
   image?: string;
 }
 
+// Cache para produtos
+const PRODUCTS_CACHE_KEY = 'bmw_products_cache';
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+
+interface CachedProducts {
+  data: IPresent[];
+  timestamp: number;
+}
+
 export const productService = {
-  // Listar todos os produtos
+  // Cache local para melhorar performance
+  _productsCache: null as CachedProducts | null,
+
+  // Verificar se o cache é válido
+  _isCacheValid(): boolean {
+    if (!this._productsCache) return false;
+    const now = Date.now();
+    return (now - this._productsCache.timestamp) < CACHE_DURATION;
+  },
+
+  // Salvar no cache
+  _saveToCache(data: IPresent[]): void {
+    this._productsCache = {
+      data,
+      timestamp: Date.now()
+    };
+    
+    // Salvar também no localStorage
+    try {
+      localStorage.setItem(PRODUCTS_CACHE_KEY, JSON.stringify(this._productsCache));
+    } catch (error) {
+      console.warn('Failed to save products to localStorage:', error);
+    }
+  },
+
+  // Carregar do cache
+  _loadFromCache(): IPresent[] | null {
+    // Tentar cache em memória primeiro
+    if (this._isCacheValid()) {
+      console.log('📦 Produtos carregados do cache em memória');
+      return this._productsCache!.data;
+    }
+
+    // Tentar localStorage
+    try {
+      const cached = localStorage.getItem(PRODUCTS_CACHE_KEY);
+      if (cached) {
+        const parsedCache: CachedProducts = JSON.parse(cached);
+        const now = Date.now();
+        
+        if ((now - parsedCache.timestamp) < CACHE_DURATION) {
+          this._productsCache = parsedCache;
+          console.log('💾 Produtos carregados do localStorage cache');
+          return parsedCache.data;
+        } else {
+          localStorage.removeItem(PRODUCTS_CACHE_KEY);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load from cache:', error);
+      localStorage.removeItem(PRODUCTS_CACHE_KEY);
+    }
+
+    return null;
+  },
+
+  // Listar todos os produtos da Stripe com cache
   async listProducts(): Promise<IPresent[]> {
+    console.log('🔄 Carregando produtos...');
+    
+    // Tentar cache primeiro
+    const cachedData = this._loadFromCache();
+    if (cachedData) {
+      return cachedData;
+    }
+
+    console.log('🌐 Buscando produtos da API...');
     const maxRetries = 3;
-    const baseDelay = 1000; // 1 second
+    const baseDelay = 500; // Reduzido para 500ms
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
-        const response = await api.get('/api/presents');
-        return response.data;
+        const response = await api.get('/api/stripe/presents');
+        const products = response.data;
+        
+        // Salvar no cache
+        this._saveToCache(products);
+        console.log(`✅ ${products.length} produtos carregados da API`);
+        
+        return products;
       } catch (error: any) {
         const isRateLimit = error.response?.data?.error?.includes('rate limit');
         const isLastAttempt = attempt === maxRetries - 1;
 
         if (isRateLimit && !isLastAttempt) {
-          const delay = baseDelay * Math.pow(2, attempt); // Exponential backoff
+          const delay = baseDelay * Math.pow(2, attempt);
+          console.log(`⏳ Rate limit detectado, aguardando ${delay}ms...`);
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }
 
-        console.error('Error fetching products:', error);
-        throw error;
+        console.error(`❌ Erro no carregamento (tentativa ${attempt + 1}):`, error);
+        
+        if (isLastAttempt) {
+          throw error;
+        }
       }
     }
 
     throw new Error('Failed to fetch products after multiple attempts');
   },
 
-  // Obter um produto específico
+  // Forçar reload dos produtos
+  async forceReload(): Promise<IPresent[]> {
+    // Limpar cache
+    this._productsCache = null;
+    localStorage.removeItem(PRODUCTS_CACHE_KEY);
+    
+    console.log('🔄 Forçando reload dos produtos...');
+    return this.listProducts();
+  },
+
+  // Obter um produto específico da Stripe
   async getProduct(productId: string): Promise<IPresent> {
     try {
-      const response = await api.get(`/api/presents/${productId}`);
+      const response = await api.get(`/api/stripe/presents/${productId}`);
       return response.data;
     } catch (error) {
       console.error('Error fetching product:', error);
@@ -122,15 +216,56 @@ export const productService = {
     }
   },
 
-    // Iniciar checkout do Stripe
+    // Criar Payment Intent para Stripe Elements
+  async createPaymentIntent(productIds: string[], customerInfo: { name: string; email: string }): Promise<{ clientSecret: string; paymentIntentId: string }> {
+    try {
+      console.log('💳 ProductService: Criando Payment Intent');
+      console.log('💳 Product IDs:', productIds);
+      console.log('💳 Customer Info:', customerInfo);
+      
+      const response = await api.post('/api/stripe/presents/create-payment-intent', { 
+        productIds,
+        customerInfo
+      });
+      
+      console.log('💳 Payment Intent criado:', response.data);
+      return response.data;
+    } catch (error: any) {
+      console.error('❌ Erro ao criar Payment Intent:', error);
+      throw error;
+    }
+  },
+
+  // Iniciar checkout do Stripe (fallback)
   async presentPurchase(productIds: string[]): Promise<string> {
     try {
-      const response = await api.post(`/api/presents/purchase`, { productIds });
+      console.log('🌐 ProductService: Iniciando chamada para purchase');
+      console.log('🌐 ProductService: URL:', '/api/stripe/presents/purchase');
+      console.log('🌐 ProductService: Product IDs:', productIds);
+      
+      const response = await api.post(`/api/stripe/presents/purchase`, { productIds });
+      
+      console.log('🌐 ProductService: Response status:', response.status);
+      console.log('🌐 ProductService: Response data:', response.data);
+      
       const { url } = response.data;
-
+      
+      if (!url) {
+        throw new Error('URL não encontrada na resposta do servidor');
+      }
+      
+      console.log('🌐 ProductService: URL extraída:', url);
       return url;
-    } catch (error) {
-      console.error('Error initiating checkout:', error);
+    } catch (error: any) {
+      console.error('🌐 ProductService: ERRO DETALHADO:');
+      console.error('🌐 ProductService: - Tipo:', typeof error);
+      console.error('🌐 ProductService: - Mensagem:', error?.message);
+      console.error('🌐 ProductService: - Response Data:', error?.response?.data);
+      console.error('🌐 ProductService: - Status:', error?.response?.status);
+      console.error('🌐 ProductService: - URL:', error?.config?.url);
+      console.error('🌐 ProductService: - Method:', error?.config?.method);
+      console.error('🌐 ProductService: - Request Data:', error?.config?.data);
+      console.error('🌐 ProductService: - Erro completo:', error);
       throw error;
     }
   }

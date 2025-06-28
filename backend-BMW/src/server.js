@@ -18,8 +18,8 @@ app.post('/api/webhook', express.raw({ type: 'application/json' }), stripeRoutes
 // Middleware json() parse
 app.use(express.json());
 
-// Routes
-app.use('/api', stripeRoutes.router);
+// Routes - Order matters! More specific routes first
+app.use('/api/stripe', stripeRoutes.router);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

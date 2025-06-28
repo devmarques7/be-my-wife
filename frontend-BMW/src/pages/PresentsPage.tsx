@@ -18,7 +18,10 @@ import {
   Box, 
   Chip,
   Slider,
-  Stack
+  Stack,
+  Button,
+  CircularProgress,
+  Alert
 } from "@mui/material";
 import { IPresent } from "../types/presents";
 import PresentModal from "../components/PresentModal/PresentModal";
@@ -39,6 +42,7 @@ const PresentsPage: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [presents, setPresents] = useState<IPresent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const initialPriceRange: [number, number] = [0, 1000000];
   const [priceRange, setPriceRange] = useState<[number, number]>(initialPriceRange);
@@ -48,10 +52,19 @@ const PresentsPage: React.FC = () => {
     loadPresents();
   }, []);
 
-  const loadPresents = async () => {
+  const loadPresents = async (forceReload = false) => {
+    const isInitialLoad = loading;
+    
     try {
-      const data = await productService.listProducts();
-      console.log('Presents from API:', data);
+      if (forceReload) {
+        setRefreshing(true);
+        console.log('🔄 Forçando reload dos produtos...');
+      }
+
+      const data = forceReload 
+        ? await productService.forceReload()
+        : await productService.listProducts();
+      
       setPresents(data);
       
       // Configurar o range de preços baseado nos produtos
@@ -64,12 +77,19 @@ const PresentsPage: React.FC = () => {
       }
       
       setError(null);
-    } catch (err) {
-      console.error('Error loading presents:', err);
-      setError('Falha ao carregar os presentes');
+      console.log(`✅ ${data.length} produtos carregados com sucesso`);
+    } catch (err: any) {
+      console.error('❌ Erro ao carregar presentes:', err);
+      const errorMessage = err?.response?.data?.error || err?.message || 'Erro desconhecido';
+      setError(`Falha ao carregar os presentes: ${errorMessage}`);
     } finally {
-      setLoading(false);
+      if (isInitialLoad) setLoading(false);
+      if (forceReload) setRefreshing(false);
     }
+  };
+
+  const handleRefresh = () => {
+    loadPresents(true);
   };
 
   // Obter categorias únicas dos produtos
@@ -155,8 +175,20 @@ const PresentsPage: React.FC = () => {
   if (loading) {
     return (
       <Container id="presents_page" backgroundType="color" backgroundSrc={theme.palette.primary.main}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
+        <Header />
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '50vh',
+          gap: 2
+        }}>
+          <CircularProgress size={60} />
           <Typography variant="h5">Carregando presentes...</Typography>
+          <Typography variant="body2" color="textSecondary">
+            Isso pode levar alguns segundos...
+          </Typography>
         </Box>
       </Container>
     );
@@ -165,8 +197,28 @@ const PresentsPage: React.FC = () => {
   if (error) {
     return (
       <Container id="presents_page" backgroundType="color" backgroundSrc={theme.palette.primary.main}>
-        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
-          <Typography variant="h5" color="error">{error}</Typography>
+        <Header />
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column',
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '50vh',
+          gap: 2,
+          p: 3
+        }}>
+          <Alert severity="error" sx={{ maxWidth: 600 }}>
+            <Typography variant="h6" gutterBottom>Erro ao carregar presentes</Typography>
+            <Typography variant="body2">{error}</Typography>
+          </Alert>
+          <Button 
+            variant="contained" 
+            onClick={handleRefresh}
+            disabled={refreshing}
+            startIcon={refreshing ? <CircularProgress size={20} /> : undefined}
+          >
+            {refreshing ? 'Recarregando...' : 'Tentar Novamente'}
+          </Button>
         </Box>
       </Container>
     );
@@ -182,8 +234,27 @@ const PresentsPage: React.FC = () => {
           time_fields={TIME_FIELDS}
         />
         <div className="presents-content">
-          <h2>{TITLE}</h2>
-          <p>{DESCRIPTION}</p>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Box>
+              <h2>{TITLE}</h2>
+              <p>{DESCRIPTION}</p>
+            </Box>
+            <Button
+              variant="outlined"
+              onClick={handleRefresh}
+              disabled={refreshing}
+              startIcon={refreshing ? <CircularProgress size={20} /> : undefined}
+              sx={{ ml: 2 }}
+            >
+              {refreshing ? 'Atualizando...' : 'Atualizar'}
+            </Button>
+          </Box>
+          
+          {refreshing && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              Atualizando lista de presentes...
+            </Alert>
+          )}
           
           <Box sx={{ mb: 4 }}>
             <PresentFilters
@@ -262,15 +333,31 @@ const PresentsPage: React.FC = () => {
                               onClick={() => handleOpenDetails(present)}
                             />
                             <AppButton
-                              text={isProductInCart(present.id) ? "Já no Carrinho" : "Adicionar ao Carrinho"}
-                              type="dashed"
+                              text={
+                                present.isSelected 
+                                  ? "Não Disponível" 
+                                  : isProductInCart(present.id) 
+                                    ? "✓ No Carrinho" 
+                                    : "Adicionar ao Carrinho"
+                              }
+                              type={
+                                present.isSelected 
+                                  ? "dashed" 
+                                  : isProductInCart(present.id) 
+                                    ? "primary" 
+                                    : "dashed"
+                              }
                               onClick={() => {
-                                const success = addToCart(present);
-                                if (!success) {
-                                  // Produto já está no carrinho, pode mostrar feedback aqui se desejar
+                                if (!present.isSelected && !isProductInCart(present.id)) {
+                                  const success = addToCart(present);
+                                  if (success) {
+                                    console.log(`✅ ${present.name} adicionado ao carrinho`);
+                                  } else {
+                                    console.log(`⚠️ Não foi possível adicionar ${present.name} ao carrinho`);
+                                  }
                                 }
                               }}
-                              disabled={isProductInCart(present.id)}
+                              disabled={present.isSelected || isProductInCart(present.id)}
                             />
                           </Box>
                         </CardContent>
