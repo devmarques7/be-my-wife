@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppThemeProvider } from "./theme/themeProvider";
 import AppContextProvider from "./context/AppContext";
 import { CartProvider, useCart } from "./context/CartContext";
+import { SessionProvider } from "./context/SessionContext";
 import Layout from "./layout/Layout";
 import SuccessPage from "./pages/SuccessPage";
 import PresentsPage from "./pages/PresentsPage";
@@ -34,11 +35,13 @@ function App() {
   return (
     <Router>
       <AppThemeProvider>
-        <AppContextProvider>
-          <CartProvider>
-            <AppContent />
-          </CartProvider>
-        </AppContextProvider>
+        <SessionProvider>
+          <AppContextProvider>
+            <CartProvider>
+              <AppContent />
+            </CartProvider>
+          </AppContextProvider>
+        </SessionProvider>
       </AppThemeProvider>
     </Router>
   );

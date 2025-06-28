@@ -164,21 +164,11 @@ const Cart: React.FC = () => {
               </Box>
               
               <Stack spacing={1}>
-                <Button
-                  variant="contained"
-                  fullWidth
-                  size="large"
-                  onClick={handleCheckout}
-                  sx={{
-                    backgroundColor: theme.palette.primary.main,
-                    '&:hover': {
-                      backgroundColor: theme.palette.primary.dark,
-                    }
-                  }}
-                >
-                  Finalizar Compra
-                </Button>
-                
+              <AppButton
+                  text="Finalizar Compra"
+                  type="primary"
+                  onClick={() => handleCheckout()}
+                />
                 <Button
                   variant="outlined"
                   fullWidth

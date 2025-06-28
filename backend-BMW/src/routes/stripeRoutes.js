@@ -238,6 +238,167 @@ router.get('/presents/purchased', async (req, res) => {
   }
 });
 
+// Endpoint de teste para verificar configuração do Stripe
+router.get('/health', async (req, res) => {
+  try {
+    console.log('🔍 Verificando configuração do Stripe...');
+    
+    // Verificar chaves
+    const hasSecretKey = !!process.env.STRIPE_SECRET_KEY;
+    const secretKeyValid = hasSecretKey && process.env.STRIPE_SECRET_KEY.startsWith('sk_');
+    
+    // Teste simples: listar produtos
+    const products = await stripe.products.list({ limit: 1 });
+    
+    const status = {
+      stripe_configured: hasSecretKey && secretKeyValid,
+      secret_key_present: hasSecretKey,
+      secret_key_format: secretKeyValid,
+      api_connection: true,
+      products_accessible: products.data !== undefined,
+      timestamp: new Date().toISOString()
+    };
+    
+    console.log('✅ Status do Stripe:', status);
+    
+    res.json({
+      status: 'healthy',
+      stripe: status
+    });
+  } catch (error) {
+    console.error('❌ Erro na verificação do Stripe:', error.message);
+    res.status(500).json({
+      status: 'error',
+      error: error.message,
+      type: error.type || 'unknown'
+    });
+  }
+});
+
+// Criar Payment Intent para Stripe Elements
+router.post('/presents/create-payment-intent', async (req, res) => {
+  try {
+    // Verificar se as chaves do Stripe estão configuradas
+    if (!process.env.STRIPE_SECRET_KEY) {
+      console.error('❌ STRIPE_SECRET_KEY não configurada!');
+      return res.status(500).json({ 
+        error: 'Chave secreta do Stripe não configurada no servidor',
+        type: 'server_configuration_error'
+      });
+    }
+
+    const { productIds, customerInfo } = req.body;
+
+    // Validação de entrada
+    if (!Array.isArray(productIds) || productIds.length === 0) {
+      return res.status(400).json({ 
+        error: 'Forneça uma lista válida de IDs de produtos',
+        type: 'validation_error'
+      });
+    }
+
+    if (!customerInfo || !customerInfo.name || !customerInfo.email) {
+      return res.status(400).json({ 
+        error: 'Informações do cliente (nome e email) são obrigatórias',
+        type: 'validation_error'
+      });
+    }
+
+    console.log('🎁 Products IDs recebidos:', productIds);
+    console.log('👤 Informações do cliente:', customerInfo);
+    console.log('🔄 Iniciando criação do Payment Intent...');
+
+    // Calcular o total dos produtos
+    let totalAmount = 0;
+    const productDetails = [];
+    
+    for (const productId of productIds) {
+      try {
+        const product = await stripe.products.retrieve(productId);
+        const prices = await stripe.prices.list({ 
+          product: productId, 
+          limit: 1,
+          active: true 
+        });
+        
+        if (prices.data.length > 0) {
+          totalAmount += prices.data[0].unit_amount;
+          productDetails.push({
+            id: productId,
+            name: product.name,
+            price: prices.data[0].unit_amount
+          });
+        }
+      } catch (error) {
+        console.error(`❌ Erro ao buscar produto ${productId}:`, error);
+      }
+    }
+
+    if (totalAmount === 0) {
+      return res.status(400).json({ error: 'Nenhum produto válido encontrado' });
+    }
+
+    console.log('💰 Total calculado:', totalAmount);
+
+    // Criar o Payment Intent com métodos automáticos
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: totalAmount,
+      currency: 'eur',
+      metadata: {
+        productIds: productIds.join(','),
+        customerName: customerInfo?.name || '',
+        customerEmail: customerInfo?.email || '',
+        productNames: productDetails.map(p => p.name).join(', ')
+      },
+      // Usar métodos automáticos - Stripe detecta os disponíveis na conta
+      automatic_payment_methods: {
+        enabled: true,
+        allow_redirects: 'always'
+      }
+    });
+
+    console.log('✅ Payment Intent criado com sucesso!');
+    console.log('- ID:', paymentIntent.id);
+    console.log('- Valor:', totalAmount, 'centavos (€' + (totalAmount/100).toFixed(2) + ')');
+    console.log('- Cliente:', customerInfo.name, '(' + customerInfo.email + ')');
+    console.log('- Produtos:', productDetails.length, 'itens');
+    console.log('- Client Secret gerado:', paymentIntent.client_secret ? 'SIM' : 'NÃO');
+
+    res.json({ 
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+      amount: totalAmount,
+      currency: 'eur',
+      status: 'success'
+    });
+  } catch (error) {
+    console.error('❌ ERRO DETALHADO ao criar Payment Intent:');
+    console.error('- Tipo:', error.type || 'Desconhecido');
+    console.error('- Mensagem:', error.message || 'Sem mensagem');
+    console.error('- Código:', error.code || 'Sem código');
+    console.error('- Request ID:', error.requestId || 'Sem ID');
+    
+    // Erro específico baseado no tipo
+    if (error.type === 'StripeInvalidRequestError') {
+      return res.status(400).json({ 
+        error: `Erro de configuração: ${error.message}`,
+        type: 'validation_error'
+      });
+    } else if (error.type === 'StripeAuthenticationError') {
+      return res.status(401).json({ 
+        error: 'Erro de autenticação do Stripe. Verifique as chaves de API.',
+        type: 'authentication_error'
+      });
+    } else {
+      return res.status(500).json({ 
+        error: 'Erro interno do servidor ao criar Payment Intent',
+        type: 'server_error'
+      });
+    }
+  }
+});
+
+// Criar sessão de checkout do Stripe para múltiplos produtos (fallback)
 router.post('/presents/purchase', async (req, res) => {
   try {
     const { productIds } = req.body;
@@ -246,38 +407,47 @@ router.post('/presents/purchase', async (req, res) => {
       return res.status(400).json({ error: 'Forneça uma lista válida de IDs de produtos' });
     }
 
-    // Buscar os produtos na stripe
-    const products = await stripe.products.list({
-      ids: productIds,
-      expand: ['data.default_price'],
-    });
+    console.log('Products IDs recebidos:', productIds);
 
-    // Criar os line items para o Checkout
-    const lineItems = products.data.map(product => ({
-      price: product.default_price.id,
-      quantity: 1,
-    }));
+    // Buscar os produtos da Stripe
+    const lineItems = [];
+    
+    for (const productId of productIds) {
+      try {
+        const product = await stripe.products.retrieve(productId);
+        const prices = await stripe.prices.list({ 
+          product: productId, 
+          limit: 1,
+          active: true 
+        });
+        
+        if (prices.data.length > 0) {
+          lineItems.push({
+            price: prices.data[0].id,
+            quantity: 1,
+          });
+        }
+      } catch (error) {
+        console.error(`Erro ao buscar produto ${productId}:`, error);
+      }
+    }
+
+    if (lineItems.length === 0) {
+      return res.status(400).json({ error: 'Nenhum produto válido encontrado' });
+    }
 
     // Criar a sessão de Checkout
     const session = await stripe.checkout.sessions.create({
       line_items: lineItems,
       mode: 'payment',
-      success_url: `${process.env.FRONT_BASE_URL}/success`,
-      cancel_url: `${process.env.FRONT_BASE_URL}/checkout`,
+      success_url: `${process.env.FRONT_BASE_URL || 'http://localhost:5173'}/success`,
+      cancel_url: `${process.env.FRONT_BASE_URL || 'http://localhost:5173'}/checkout`,
       metadata: {
-        productIds: productIds.join(','), // Armazenar os IDs dos produtos na metadata
+        productIds: productIds.join(','),
       }
     });
 
-    for (const item of products.data) {
-      await stripe.products.update(item.id, {
-        metadata: {
-          ...item.metadata,
-          is_reserved: 'true'
-        }
-      });
-    }
-
+    console.log('Sessão criada:', session.url);
     res.json({ url: session.url });
   } catch (error) {
     console.error('Erro ao criar sessão de Checkout:', error);
@@ -305,6 +475,32 @@ async function webhookHandler(req, res) {
     // Atualizar o status dos produtos para inativo
     for (const productId of productIds) {
       await stripe.products.update(productId, { active: false });
+    }
+  }
+
+  if (event.type === 'payment_intent.succeeded') {
+    const paymentIntent = event.data.object;
+    const productIds = paymentIntent.metadata.productIds.split(',');
+
+    console.log('✅ Payment Intent succeeded:', paymentIntent.id);
+    console.log('🎁 Produtos a marcar como comprados:', productIds);
+
+    // Atualizar o status dos produtos para comprados
+    for (const productId of productIds) {
+      try {
+        await stripe.products.update(productId, { 
+          active: false,
+          metadata: {
+            is_selected: 'true',
+            buyer_name: paymentIntent.metadata.customerName || '',
+            buyer_email: paymentIntent.metadata.customerEmail || '',
+            payment_intent_id: paymentIntent.id
+          }
+        });
+        console.log(`✅ Produto ${productId} marcado como comprado`);
+      } catch (error) {
+        console.error(`❌ Erro ao atualizar produto ${productId}:`, error);
+      }
     }
   }
 

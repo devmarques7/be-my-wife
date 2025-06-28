@@ -102,58 +102,109 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   });
 
   const [isCartOpen, setIsCartOpen] = useState(false);
+  
+  // Obter função de backup do contexto de sessão (se disponível)
+  const getSessionBackup = () => {
+    try {
+      const saved = localStorage.getItem('bmw_wedding_session_cart');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  };
+  
+  const backupCartToSession = (items: ICartItem[]) => {
+    try {
+      localStorage.setItem('bmw_wedding_session_cart', JSON.stringify(items));
+      console.log('🛒 Carrinho salvo no backup da sessão');
+    } catch (error) {
+      console.error('❌ Erro ao fazer backup do carrinho:', error);
+    }
+  };
 
-  // Salvar no localStorage
+  // Salvar no localStorage e backup da sessão
   useEffect(() => {
     localStorage.setItem('bmw-cart', JSON.stringify(cart));
+    backupCartToSession(cart.items);
   }, [cart]);
 
   // Carregar do localStorage na inicialização
   useEffect(() => {
     const loadCartFromStorage = () => {
-      const savedCart = localStorage.getItem('bmw-cart');
-      if (savedCart) {
-        try {
-          const parsedCart = JSON.parse(savedCart);
-          if (parsedCart.items && Array.isArray(parsedCart.items) && parsedCart.items.length > 0) {
-            // Para produtos únicos, garantimos quantidade = 1 para cada item
-            const validItems = parsedCart.items.map((item: ICartItem) => ({
-              ...item,
-              quantity: 1 // Forçar quantidade = 1 para produtos únicos
-            }));
-            
-            // Recalcular total e itemCount
-            const recalculatedCart = {
-              items: validItems,
-              total: validItems.reduce((sum: number, item: ICartItem) => sum + item.price, 0),
-              itemCount: validItems.length
-            };
-            
-            // Recriar o carrinho com os dados salvos
-            dispatch({ type: 'CLEAR_CART' });
-            validItems.forEach((item: ICartItem) => {
-              dispatch({ 
-                type: 'ADD_ITEM', 
-                payload: {
-                  id: item.presentId,
-                  name: item.name,
-                  description: item.description,
-                  price: item.price,
-                  category: item.category,
-                  image: item.image,
-                  isSelected: false,
-                  buyerName: null,
-                  buyerEmail: null,
-                  active: true,
-                  priceId: item.presentId
-                }
-              });
-            });
-          }
-        } catch (error) {
-          console.error('Error loading cart from localStorage:', error);
-          localStorage.removeItem('bmw-cart'); // Remove dados corrompidos
+      console.log('🛒 Carregando carrinho do localStorage...');
+      
+      try {
+        const savedCart = localStorage.getItem('bmw-cart');
+        
+        if (!savedCart) {
+          console.log('🛒 Nenhum carrinho salvo encontrado');
+          return;
         }
+
+        const parsedCart = JSON.parse(savedCart);
+        
+        if (!parsedCart.items || !Array.isArray(parsedCart.items)) {
+          console.log('🛒 Dados do carrinho inválidos');
+          localStorage.removeItem('bmw-cart');
+          return;
+        }
+
+        if (parsedCart.items.length === 0) {
+          console.log('🛒 Carrinho vazio');
+          return;
+        }
+
+        console.log(`🛒 Encontrados ${parsedCart.items.length} itens no carrinho`);
+
+        // Validar e limpar itens
+        const validItems = parsedCart.items
+          .filter((item: any) => item && item.presentId && item.name && typeof item.price === 'number')
+          .map((item: ICartItem) => ({
+            ...item,
+            quantity: 1 // Garantir quantidade = 1 para produtos únicos
+          }));
+
+        if (validItems.length === 0) {
+          console.log('🛒 Nenhum item válido encontrado');
+          localStorage.removeItem('bmw-cart');
+          return;
+        }
+
+        console.log(`🛒 ${validItems.length} itens válidos processados`);
+
+        // Recriar o carrinho de forma mais simples
+        const newState = {
+          items: validItems,
+          total: validItems.reduce((sum: number, item: ICartItem) => sum + item.price, 0),
+          itemCount: validItems.length
+        };
+
+        // Usar dispatch interno para atualizar estado
+        validItems.forEach((item: ICartItem) => {
+          dispatch({ 
+            type: 'ADD_ITEM', 
+            payload: {
+              id: item.presentId,
+              name: item.name,
+              description: item.description || '',
+              price: item.price,
+              category: item.category || 'Outros',
+              image: item.image || '',
+              isSelected: false,
+              buyerName: null,
+              buyerEmail: null,
+              active: true,
+              priceId: item.presentId
+            }
+          });
+        });
+
+        console.log(`✅ Carrinho carregado com sucesso: ${validItems.length} itens, total € ${(newState.total / 100).toFixed(2)}`);
+
+      } catch (error) {
+        console.error('❌ Erro ao carregar carrinho:', error);
+        localStorage.removeItem('bmw-cart');
+        localStorage.removeItem('bmw_wedding_session_cart');
       }
     };
 
@@ -161,11 +212,22 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
   }, []);
 
   const addToCart = (present: IPresent): boolean => {
+    console.log('🛒 Tentando adicionar produto ao carrinho:', present.name);
+    
     const existingItem = cart.items.find(item => item.presentId === present.id);
     if (existingItem) {
+      console.log('⚠️ Produto já está no carrinho:', present.name);
       return false; // Produto já está no carrinho
     }
+
+    // Verificar se o produto está disponível
+    if (present.isSelected) {
+      console.log('❌ Produto não está disponível:', present.name);
+      return false;
+    }
+
     dispatch({ type: 'ADD_ITEM', payload: present });
+    console.log('✅ Produto adicionado ao carrinho:', present.name, `€${(present.price / 100).toFixed(2)}`);
     return true; // Produto adicionado com sucesso
   };
 

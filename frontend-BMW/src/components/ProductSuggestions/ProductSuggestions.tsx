@@ -15,6 +15,7 @@ import { Add as AddIcon } from '@mui/icons-material';
 import { useCart } from '../../context/CartContext';
 import { productService } from '../../services/productService';
 import { IPresent } from '../../types/presents';
+import AppButton from '../AppButton/AppButton';
 
 interface ProductSuggestionsProps {
   excludeIds?: string[];
@@ -116,22 +117,13 @@ const ProductSuggestions: React.FC<ProductSuggestionsProps> = ({
                   }}>
                     € {(product.price / 100).toFixed(2)}
                   </Typography>
-                  
-                  <Button
-                    variant="contained"
-                    size="small"
-                    startIcon={<AddIcon />}
+
+                  <AppButton
+                    text="Adicionar"
+                    type="primary"
                     onClick={() => handleAddToCart(product)}
-                    sx={{
-                      backgroundColor: theme.palette.primary.main,
-                      '&:hover': {
-                        backgroundColor: theme.palette.primary.dark,
-                      },
-                      mt: 1
-                    }}
-                  >
-                    Adicionar
-                  </Button>
+                    fullWidth={true}
+                  />
                 </Stack>
               </CardContent>
             </Card>

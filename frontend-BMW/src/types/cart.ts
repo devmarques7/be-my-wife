@@ -18,10 +18,6 @@ export interface ICart {
 export interface ICheckoutForm {
   name: string;
   email: string;
-  phone: string;
-  address: string;
-  city: string;
-  zipCode: string;
   paymentMethod: 'card' | 'pix' | 'transfer';
 }
 
