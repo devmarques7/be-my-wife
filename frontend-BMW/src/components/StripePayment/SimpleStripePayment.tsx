@@ -41,10 +41,10 @@ const PaymentForm: React.FC<{
   // Função para validar email com mais rigor
   const validateEmail = (email: string): boolean => {
     if (!email || typeof email !== 'string') return false;
-    
+
     const trimmedEmail = email.trim();
     if (trimmedEmail.length === 0) return false;
-    
+
     // Regex mais rigoroso para email
     const emailRegex = /^[a-zA-Z0-9]([a-zA-Z0-9._-])*[a-zA-Z0-9]@[a-zA-Z0-9]([a-zA-Z0-9-])*[a-zA-Z0-9]\.([a-zA-Z]{2,})+$/;
     return emailRegex.test(trimmedEmail.toLowerCase());
@@ -123,41 +123,41 @@ const PaymentForm: React.FC<{
       if (error && customerInfo && (error.code === 'email_invalid' || error.message?.includes('email') || error.message?.includes('billing_details'))) {
         console.log('⚠️ Erro detectado, tentando abordagem alternativa...');
         console.log('⚠️ Erro original:', error.message);
-        
+
         // Tentar sem billing_details manual (deixar o Elements coletar automaticamente)
         result = await stripe.confirmPayment({
           elements,
           confirmParams: baseConfirmParams,
           redirect: 'if_required'
         });
-        
+
         error = result.error;
         console.log('💳 Segunda tentativa resultado:', error ? 'ERRO' : 'SUCESSO');
       }
 
-              if (error) {
-          console.error('❌ Erro no pagamento:', error);
-          console.error('❌ Código do erro:', error.code);
-          console.error('❌ Tipo do erro:', error.type);
-          console.error('❌ Param do erro:', error.param);
-          
-          let errorMessage = error.message || 'Erro desconhecido no pagamento';
-          
-          // Mensagens específicas para diferentes tipos de erro
-          if (error.code === 'email_invalid') {
-            errorMessage = 'O endereço de email fornecido não é válido. Por favor, verifique e tente novamente.';
-          } else if (error.type === 'card_error') {
-            errorMessage = `Erro no cartão: ${error.message}`;
-          } else if (error.type === 'validation_error') {
-            errorMessage = `Dados inválidos: ${error.message}`;
-          }
-          
-          setErrorMessage(errorMessage);
-          onError(errorMessage);
-        } else {
-          console.log('✅ Pagamento processado com sucesso!');
-          onSuccess();
+      if (error) {
+        console.error('❌ Erro no pagamento:', error);
+        console.error('❌ Código do erro:', error.code);
+        console.error('❌ Tipo do erro:', error.type);
+        console.error('❌ Param do erro:', error.param);
+
+        let errorMessage = error.message || 'Erro desconhecido no pagamento';
+
+        // Mensagens específicas para diferentes tipos de erro
+        if (error.code === 'email_invalid') {
+          errorMessage = 'O endereço de email fornecido não é válido. Por favor, verifique e tente novamente.';
+        } else if (error.type === 'card_error') {
+          errorMessage = `Erro no cartão: ${error.message}`;
+        } else if (error.type === 'validation_error') {
+          errorMessage = `Dados inválidos: ${error.message}`;
         }
+
+        setErrorMessage(errorMessage);
+        onError(errorMessage);
+      } else {
+        console.log('✅ Pagamento processado com sucesso!');
+        onSuccess();
+      }
     } catch (error: any) {
       console.error('❌ Erro inesperado:', error);
       const errorMsg = error?.message || 'Erro inesperado durante o pagamento';
@@ -171,7 +171,7 @@ const PaymentForm: React.FC<{
   return (
     <form onSubmit={handleSubmit}>
       <Box sx={{ mb: 3 }}>
-        <PaymentElement 
+        <PaymentElement
           options={{
             layout: 'accordion',
             paymentMethodOrder: ['ideal', 'card', 'paypal', 'klarna'],
@@ -182,7 +182,7 @@ const PaymentForm: React.FC<{
               } : undefined
             },
             fields: {
-              billingDetails: customerInfo ? 'never' : 'auto'
+              billingDetails: 'auto'
             }
           }}
         />
@@ -259,15 +259,15 @@ const SimpleStripePayment: React.FC<SimpleStripePaymentProps> = ({
       <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
         Escolha seu Método de Pagamento
       </Typography>
-      
+
       <Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
         Métodos disponíveis: iDEAL (recomendado), Cartão, PayPal, Klarna e outros
       </Typography>
 
       <Elements options={options} stripe={stripePromise}>
-        <PaymentForm 
-          onSuccess={onSuccess} 
-          onError={onError} 
+        <PaymentForm
+          onSuccess={onSuccess}
+          onError={onError}
           customerInfo={customerInfo}
         />
       </Elements>
