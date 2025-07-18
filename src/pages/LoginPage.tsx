@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, TextField, Typography, Container, useTheme } from '@mui/material';
 import AppButton from '../components/AppButton/AppButton';
 import { StyledLogin } from '../components/Login/styleLogin';
+import { API_CONFIG } from '../config/api.config';
 
 const LoginPage: React.FC = () => {
   const theme = useTheme();
@@ -14,7 +15,7 @@ const LoginPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3001/api/admin/login', {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}${API_CONFIG.endpoints.login}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -203,7 +203,12 @@ const PaymentForm: React.FC<{
         sx={{
           py: 1.5,
           fontSize: '1rem',
-          fontWeight: 600
+          fontWeight: 600,
+          backgroundColor: 'black',
+          color: 'white',
+          '&:hover': {
+            backgroundColor: '#333'
+          }
         }}
       >
         {isProcessing ? (

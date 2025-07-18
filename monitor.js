@@ -2,7 +2,7 @@ const { exec } = require('child_process');
 const http = require('http');
 
 const FRONTEND_URL = 'http://localhost:5173';
-const BACKEND_URL = 'http://localhost:3001';
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 function checkFrontend() {
   return new Promise((resolve) => {
