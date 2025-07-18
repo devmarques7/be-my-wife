@@ -12,13 +12,13 @@ import {
   Stack,
   Button,
   useTheme,
-  Alert,
-  CircularProgress
+  Alert
 } from '@mui/material';
 import {
   ArrowBack as ArrowBackIcon,
   Security as SecurityIcon
 } from '@mui/icons-material';
+import styled from 'styled-components';
 import { useCart } from '../context/CartContext';
 import { useSession } from '../context/SessionContext';
 import { useNavigate } from 'react-router-dom';
@@ -31,6 +31,27 @@ import CompactCountDown from '../components/CountDown/CompactCountDown';
 import PaymentMethodSelector from '../components/PaymentMethodSelector/PaymentMethodSelector';
 import { ICheckoutForm } from '../types/cart';
 import { productService } from '../services/productService';
+
+// Styled wrapper para garantir o posicionamento correto dos componentes
+const StyledCheckout = styled(Box)`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  min-height: 100vh;
+  padding-top: 100px; /* Espaço para header fixo */
+
+  .checkout-content {
+    max-width: 1200px;
+    width: 100%;
+    margin-top: 20px; /* Espaçamento após o countdown */
+
+    @media (max-width: 768px) {
+      padding: 1rem;
+      margin-top: 10px;
+    }
+  }
+`;
 
 const CheckoutPage: React.FC = () => {
   const theme = useTheme();
@@ -50,7 +71,6 @@ const CheckoutPage: React.FC = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [clientSecret, setClientSecret] = useState<string>('');
-  const [paymentIntentId, setPaymentIntentId] = useState<string>('');
   const [paymentError, setPaymentError] = useState<string>('');
 
   // Sincronizar formData com customerInfo do SessionContext
@@ -161,7 +181,6 @@ const CheckoutPage: React.FC = () => {
 
       // Configurar dados do Payment Intent para exibir inline
       setClientSecret(paymentData.clientSecret);
-      setPaymentIntentId(paymentData.paymentIntentId);
       console.log('✅ Formulário de pagamento ativado');
 
     } catch (error: any) {
@@ -206,7 +225,6 @@ const CheckoutPage: React.FC = () => {
     setSubmitted(true);
     // Limpar dados do payment intent
     setClientSecret('');
-    setPaymentIntentId('');
   };
 
   const handlePaymentError = (error: string) => {
@@ -276,28 +294,16 @@ const CheckoutPage: React.FC = () => {
     <>
       <Container id="checkout_page" backgroundType="color" backgroundSrc={theme.palette.primary.main}>
         <Header />
-        
-        {/* Countdown Section */}
-        {DATETIME_COUNTDOWN && TIME_FIELDS && (
-          <Box sx={{ 
-            display: 'flex', 
-            justifyContent: 'center', 
-            py: { xs: 2, md: 3 },
-            px: { xs: 2, md: 4 }
-          }}>
+        <StyledCheckout theme={theme}>
+          {/* Countdown Section - posicionado logo após o Header */}
+          {DATETIME_COUNTDOWN && TIME_FIELDS && (
             <CompactCountDown 
               datetime={DATETIME_COUNTDOWN} 
               time_fields={TIME_FIELDS}
             />
-          </Box>
-        )}
-        
-        <Box sx={{ 
-          maxWidth: 1200, 
-          mx: 'auto', 
-          p: { xs: 2, sm: 3, md: 4 },
-          minHeight: 'calc(100vh - 200px)' // Garante scroll completo
-        }}>
+          )}
+          
+          <div className="checkout-content">
           {/* Header da página */}
           <Stack 
             direction={{ xs: 'column', sm: 'row' }} 
@@ -560,7 +566,7 @@ const CheckoutPage: React.FC = () => {
                   </Typography>
                 </Box>
 
-                <AppButton
+                {/* <AppButton
                   text={clientSecret ? 'Complete o Pagamento Abaixo' : (isSubmitting ? 'Preparando...' : 'Preencha os Dados')}
                   type={clientSecret ? 'dashed' : 'primary'}
                   onClick={() => {
@@ -570,7 +576,7 @@ const CheckoutPage: React.FC = () => {
                   }}
                   disabled={isSubmitting || !!clientSecret}
                   fullWidth={true}
-                />
+                /> */}
 
               </Paper>
             </Grid>
@@ -585,15 +591,14 @@ const CheckoutPage: React.FC = () => {
             </Alert>
           )}
 
-          {/* Sugestões de Produtos */}
-          <ProductSuggestions
-            excludeIds={cart.items.map(item => item.presentId)}
-            maxItems={4}
-          />
-        </Box>
+            {/* Sugestões de Produtos */}
+            <ProductSuggestions
+              excludeIds={cart.items.map(item => item.presentId)}
+              maxItems={4}
+            />
+          </div>
+        </StyledCheckout>
       </Container>
-
-
     </>
   );
 };

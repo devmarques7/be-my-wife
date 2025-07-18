@@ -113,7 +113,7 @@ const ProductSuggestions: React.FC<ProductSuggestionsProps> = ({
                   
                   <Typography variant="h6" sx={{ 
                     fontWeight: 600,
-                    color: theme.palette.primary.main
+                    color: theme.palette.secondary.main
                   }}>
                     € {(product.price / 100).toFixed(2)}
                   </Typography>

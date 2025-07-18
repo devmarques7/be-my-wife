@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Typography, Grid, Card, CardContent, Button, useTheme } from '@mui/material';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { StyledAdmin } from '../components/Admin/styleAdmin';
+import { API_CONFIG } from '../config/api.config';
 
 interface Statistics {
   total: number;
@@ -28,7 +29,7 @@ const AdminPage: React.FC = () => {
 
     const fetchStatistics = async () => {
       try {
-        const response = await fetch('http://localhost:3001/api/selections/statistics', {
+        const response = await fetch(`${import.meta.env.VITE_API_URL}${API_CONFIG.endpoints.statistics}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
