@@ -68,9 +68,9 @@ const Footer: React.FC<IFooterProps> = ({SOCIAL_MEDIA, copyright}) => {
         <Rights theme={theme} className="footer__rights">{copyright}</Rights>
         <div className="footer-content">
           <p>{copyright}</p>
-          <Link to="/login" className="admin-login">
+          {/* <Link to="/login" className="admin-login">
             Área Administrativa
-          </Link>
+          </Link> */}
         </div>
       </StyledFooter>
     </Container>
