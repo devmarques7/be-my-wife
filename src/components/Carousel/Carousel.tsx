@@ -75,7 +75,7 @@ const Carousel = ({ PHOTOS_CAROUSEL, CONFIRME_PRESENCE, title, subtitle }: ICaro
         ))}
       </Swiper>
       <StyledTextBox theme={theme}>
-        <AppButton ghost text={CONFIRME_PRESENCE.TEXT} type="primary" navigateTo={CONFIRME_PRESENCE.URL}/>
+        {/* <AppButton ghost text={CONFIRME_PRESENCE.TEXT} type="primary" navigateTo={CONFIRME_PRESENCE.URL}/> */}
         <p>{PHOTOS_CAROUSEL.length > 0 && PHOTOS_CAROUSEL[0].DESCRIPTION}</p>
       </StyledTextBox>
     </StyledCarousel>
