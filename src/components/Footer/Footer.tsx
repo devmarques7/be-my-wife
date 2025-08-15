@@ -5,13 +5,14 @@ import { useContext } from "react";
 import { AppContext } from "../../context/AppContext";
 import InstagramIcon from '@mui/icons-material/Instagram';
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
+import { Link } from "react-router-dom";
 
 export interface IFooterProps {
   SOCIAL_MEDIA: {
     INSTAGRAM: string;
     WHATSAPP: string;
-}
-copyright: string;
+  }
+  copyright: string;
 }
 
 const Footer: React.FC<IFooterProps> = ({SOCIAL_MEDIA, copyright}) => {
@@ -28,18 +29,16 @@ const Footer: React.FC<IFooterProps> = ({SOCIAL_MEDIA, copyright}) => {
 
   const conditionalRender = (link: string, index:number) => {
     let currentHref = ""
-    if(index === 0){currentHref = "home_page"}
-    if(index === 1){currentHref = "countdown_page"}
-    if(index === 2){currentHref = "location_page"}
+    if(index === 0){currentHref = "/"}
+    if(index === 1){currentHref = "/#countdown_page"}
+    if(index === 2){currentHref = "/#location_page"}
+    if(index === 3){currentHref = "/presents"}
     return (
       <NavLink
         key={link}
         theme={theme}
-        href={`#${currentHref}`}
-        onClick={(e) => {
-          e.preventDefault(); // Prevent default link behavior
-          scrollToSection(currentHref);
-        }}
+        as={Link}
+        to={currentHref}
       >
         {link}
       </NavLink>
@@ -67,6 +66,12 @@ const Footer: React.FC<IFooterProps> = ({SOCIAL_MEDIA, copyright}) => {
           </a>
         </SocialIcons>
         <Rights theme={theme} className="footer__rights">{copyright}</Rights>
+        <div className="footer-content">
+          <p>{copyright}</p>
+          {/* <Link to="/login" className="admin-login">
+            Área Administrativa
+          </Link> */}
+        </div>
       </StyledFooter>
     </Container>
   );

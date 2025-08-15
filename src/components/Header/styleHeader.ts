@@ -6,12 +6,15 @@ export const StyledHeaderContainer = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100vw;
+  width: 100%;
   height: 80px;
   padding: 0 40px;
   background-color: ${({ theme }) => theme.palette.background.default};
-  position: relative;
-  z-index: 20;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   @media (max-width: 768px) {
     padding: 0 20px;

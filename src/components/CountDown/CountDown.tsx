@@ -12,7 +12,8 @@ export interface ICountDownProps {
     hours: string;
     minutes: string;
     seconds: string;
-}
+  };
+  colorVariant?: 'primary' | 'secondary';
 }
 
 // Helper function to calculate time remaining
@@ -36,7 +37,12 @@ const calculateTimeLeft = (eventDate: Date) => {
   return timeLeft;
 };
 
-const CountDown: React.FC<ICountDownProps> = ({title, datetime, time_fields}) => {
+const CountDown: React.FC<ICountDownProps> = ({
+  title, 
+  datetime, 
+  time_fields,
+  colorVariant = 'primary'
+}) => {
   const theme = useTheme();
 
   // Set your event date here
@@ -56,13 +62,29 @@ const CountDown: React.FC<ICountDownProps> = ({title, datetime, time_fields}) =>
 
   return (
     <Container id="countdown_page" backgroundType="image" backgroundSrc="/source/g&d.jpg">
-      <StyledCountDown theme={theme}>
-        <StyledTitle theme={theme}>{title}</StyledTitle>
+      <StyledCountDown theme={theme} colorVariant={colorVariant}>
+        <StyledTitle theme={theme} colorVariant={colorVariant}>{title}</StyledTitle>
         <CountdownContainer>
-          <TimeSegment value={timeLeft.days} label={time_fields.days}/>
-          <TimeSegment value={timeLeft.hours} label={time_fields.hours}/>
-          <TimeSegment value={timeLeft.minutes} label={time_fields.minutes}/>
-          <TimeSegment value={timeLeft.seconds} label={time_fields.seconds} />
+          <TimeSegment 
+            value={timeLeft.days} 
+            label={time_fields.days} 
+            colorVariant={colorVariant}
+          />
+          <TimeSegment 
+            value={timeLeft.hours} 
+            label={time_fields.hours} 
+            colorVariant={colorVariant}
+          />
+          <TimeSegment 
+            value={timeLeft.minutes} 
+            label={time_fields.minutes} 
+            colorVariant={colorVariant}
+          />
+          <TimeSegment 
+            value={timeLeft.seconds} 
+            label={time_fields.seconds} 
+            colorVariant={colorVariant}
+          />
         </CountdownContainer>
       </StyledCountDown>
     </Container>

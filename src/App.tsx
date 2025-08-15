@@ -1,14 +1,49 @@
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AppThemeProvider } from "./theme/themeProvider";
 import AppContextProvider from "./context/AppContext";
+import { CartProvider, useCart } from "./context/CartContext";
+import { SessionProvider } from "./context/SessionContext";
 import Layout from "./layout/Layout";
+import SuccessPage from "./pages/SuccessPage";
+import PresentsPage from "./pages/PresentsPage";
+import CheckoutPage from "./pages/CheckoutPage";
+import LoginPage from './pages/LoginPage';
+import AdminPage from './pages/AdminPage';
+import Cart from './components/Cart/Cart';
+import CartNotification from './components/CartNotification/CartNotification';
+
+const AppContent: React.FC = () => {
+  const { toggleCart } = useCart();
+
+  return (
+    <>
+      <Routes>
+        <Route path="/" element={<Layout />} />
+        <Route path="/presents" element={<PresentsPage />} />
+        <Route path="/success" element={<SuccessPage />} />
+        <Route path="/checkout" element={<CheckoutPage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin" element={<AdminPage />} />
+      </Routes>
+      <Cart />
+      <CartNotification onViewCart={toggleCart} />
+    </>
+  );
+};
 
 function App() {
   return (
-    <AppThemeProvider>
-      <AppContextProvider>
-        <Layout />
-      </AppContextProvider>
-    </AppThemeProvider>
+    <Router>
+      <AppThemeProvider>
+        <SessionProvider>
+          <AppContextProvider>
+            <CartProvider>
+              <AppContent />
+            </CartProvider>
+          </AppContextProvider>
+        </SessionProvider>
+      </AppThemeProvider>
+    </Router>
   );
 }
 

@@ -1,21 +1,37 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTheme } from "@mui/material";
 import { StyledAppButton } from "./styleAppButton";
 
 export interface IAppButtonProps {
   text: string;
   className?: string;
-  type?: "primary" | "dashed" ;
+  type?: "primary" | "dashed";
   navigateTo?: string;
-  ghost?: boolean | undefined;
+  onClick?: () => void;
+  disabled?: boolean;
+  fullWidth?: boolean;
 }
 
-const AppButton: React.FC<IAppButtonProps> = ({ text, className, type, navigateTo, ghost }) => {
+const AppButton: React.FC<IAppButtonProps> = ({ 
+  text, 
+  className, 
+  type = "primary", 
+  navigateTo, 
+  onClick, 
+  disabled,
+  fullWidth = false
+}) => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const handleClick = () => {
-    console.log(navigateTo)
+    if (disabled) return;
+    
     if (navigateTo) {
-      window.open(navigateTo, '_blank');
+      navigate(navigateTo);
+    } else if (onClick) {
+      onClick();
     }
   };
 
@@ -23,9 +39,10 @@ const AppButton: React.FC<IAppButtonProps> = ({ text, className, type, navigateT
     <StyledAppButton
       theme={theme}
       className={className}
-      ghost={ghost}
       type={type}
       onClick={handleClick}
+      disabled={disabled}
+      fullWidth={fullWidth}
     >
       {text}
     </StyledAppButton>

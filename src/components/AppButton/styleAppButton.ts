@@ -1,60 +1,50 @@
 import { Button, ButtonProps } from 'antd';
 import styled from 'styled-components';
+import { Theme } from '@mui/material/styles';
 
 export interface IAppButtonProps extends ButtonProps {
   type?: "primary" | "dashed" | "default";
   navigateTo?: string;
+  disabled?: boolean;
 }
 
-export const StyledAppButton = styled(Button)<IAppButtonProps>`
-  border: ${({ theme, type }) =>
-    type === "dashed"
-      ? `1px dashed ${theme.palette.secondary.main}`
-      : `1px solid ${theme.palette.secondary.main}`} !important;
+interface StyledAppButtonProps {
+  type: 'primary' | 'dashed';
+  disabled?: boolean;
+  theme: Theme;
+}
 
-  color: ${({ theme, type }) =>
-    type === "primary" ? "#fff" : theme.palette.secondary.main} !important;
+export const StyledAppButton = styled.button<StyledAppButtonProps>`
+  padding: 10px 20px;
+  border-radius: 4px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: ${props => props.disabled ? 'not-allowed' : 'pointer'};
+  transition: all 0.3s ease;
+  opacity: ${props => props.disabled ? 0.6 : 1};
+  font-family: ${props => props.theme.typography.fontFamily};
 
-  background-color: ${({ theme, type }) =>
-    type === "primary" ? theme.palette.secondary.main : "transparent"} !important;
+  ${props => props.type === 'primary' && `
+    background-color: ${props.theme.palette.secondary.main};
+    color: ${props.theme.palette.secondary.light};
+    border: none;
 
-  position: relative;
-  overflow: hidden;
+    &:hover {
+      background-color: ${props.disabled 
+        ? props.theme.palette.primary.light 
+        : props.theme.palette.primary.dark};
+    }
+  `}
 
-  &:hover {
-    ${({ type, theme }) =>
-      type === "primary"
-        ? `
-          background-color: transparent !important;
-          color: ${theme.palette.secondary.main} !important;
-        `
-        : type === "dashed"
-        ? `
-          border-color: ${theme.palette.secondary.main};
-        `
-        : `
-          background-color: transparent;
-        `}
-  }
+  ${props => props.type === 'dashed' && `
+    background-color: transparent;
+    color: ${props.theme.palette.secondary.main};
+    border: 2px dashed ${props.theme.palette.secondary.main};
 
-  &:hover:before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: ${({ theme, type }) =>
-      type === "primary" ? theme.palette.secondary.main : "transparent"};
-    z-index: -1;
-    transition: left 5s ease-in-out;
-  }
-
-  &:hover:before {
-    left: 0;
-  }
-
-  span {
-    font-family: ${({ theme }) => theme.typography.p.fontFamily} !important;
-  }
+    &:hover {
+      background-color: ${props.disabled 
+        ? 'transparent' 
+        : props.theme.palette.secondary.light};
+    }
+  `}
 `;

@@ -16,6 +16,11 @@ export interface ILayoutProps {
 
 const Layout: React.FC<ILayoutProps> = () => {
   const { webContent } = useContext(AppContext);
+  
+  if (!webContent) {
+    return null; // or a loading component
+  }
+
   const { PHOTOS_CAROUSEL, TITLE_CAROUSEL } = webContent.CAROUSEL;
   const { PHOTOS_LOCATION, TITLE_LOCATION, LEFT_TEXT, RIGHT_TEXT, URL_LOCATION, BUTTON_ACTION } = webContent.LOCATION;
   const { TITLE_COUNTDOWN, DATETIME_COUNTDOWN, TIME_FIELDS } = webContent.COUNTDOWN;
@@ -24,14 +29,14 @@ const Layout: React.FC<ILayoutProps> = () => {
     return (
         <StyledLayout >
             <Privacy/>
-            <Header/>
+            <Header/> 
             <Carousel
                 CONFIRME_PRESENCE={webContent.CONFIRME_PRESENCE}
                 PHOTOS_CAROUSEL={PHOTOS_CAROUSEL}
                 title={TITLE_CAROUSEL}
                 subtitle=""
                 />
-            <CountDown title={TITLE_COUNTDOWN} datetime={DATETIME_COUNTDOWN} time_fields={TIME_FIELDS}/>
+            <CountDown title={TITLE_COUNTDOWN} datetime={DATETIME_COUNTDOWN} colorVariant="primary" time_fields={TIME_FIELDS}/>
             <Location
                 title={TITLE_LOCATION}
                 leftText={LEFT_TEXT}

@@ -60,4 +60,8 @@ PRIVACY: {
         HREF: string;
     };
 };
+PRESENTS: {
+  TITLE: string;
+  DESCRIPTION: string;
+};
 }

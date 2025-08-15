@@ -4,7 +4,7 @@ export const WEB_SITE_CONTENT_PT = {
   HEADER: {
     ICON: "/seven.icon.svg",
     TITLE: "Dani & Gaby",
-    NAVBAR: ["Início","Contagem", "Localização"],
+    NAVBAR: ["Início","Contagem", "Localização", "Presentes"],
     LANGUAGES: ["EN", "PT"],
     TALK_TO_US: {
       TEXT: "Fale Conosco",
@@ -74,4 +74,8 @@ export const WEB_SITE_CONTENT_PT = {
       HREF: "#home_page",
     },
   },
+  PRESENTS: {
+    TITLE: "Escolha Seu Presente",
+    DESCRIPTION: "Ajude-nos a começar nossa nova vida juntos contribuindo para nossa casa dos sonhos"
+  }
 };

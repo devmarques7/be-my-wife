@@ -26,6 +26,29 @@ export const StyledFooter = styled(Box)`
     font-size: 1rem;
     color: ${({ theme }) => theme.palette.text.secondary};
   }
+
+  .footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 1rem;
+  }
+
+  .admin-login {
+    color: ${({ theme }) => theme.palette.primary.main};
+    text-decoration: none;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid ${({ theme }) => theme.palette.primary.main};
+    border-radius: 0.5rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background-color: ${({ theme }) => theme.palette.primary.main};
+      color: white;
+    }
+  }
 `;
 
 export const NavLink = styled(Link)`
