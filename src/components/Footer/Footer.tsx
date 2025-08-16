@@ -20,25 +20,40 @@ const Footer: React.FC<IFooterProps> = ({SOCIAL_MEDIA, copyright}) => {
   const { webContent } = useContext(AppContext);
   const { NAVBAR } = webContent.HEADER;
 
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
-
   const conditionalRender = (link: string, index:number) => {
     let currentHref = ""
     if(index === 0){currentHref = "/"}
     if(index === 1){currentHref = "/#countdown_page"}
     if(index === 2){currentHref = "/#location_page"}
     if(index === 3){currentHref = "/presents"}
+    
+    const handleClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      
+      if (index === 0) {
+        // Navegar para home
+        window.location.href = "/";
+      } else if (index === 3) {
+        // Navegar para presents page
+        window.location.href = "/presents";
+      } else {
+        // Scroll suave para seção na mesma página
+        const element = document.getElementById(currentHref.replace('/#', ''));
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }
+    };
+    
     return (
       <NavLink
         key={link}
         theme={theme}
-        as={Link}
-        to={currentHref}
+        href={currentHref}
+        onClick={handleClick}
       >
         {link}
       </NavLink>

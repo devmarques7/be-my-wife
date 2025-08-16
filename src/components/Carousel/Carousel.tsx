@@ -10,9 +10,8 @@ import { ICarousel } from "../../interfaces/ICarousel";
 import { EffectCoverflow, Pagination, Autoplay } from "swiper/modules";
 import { useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
-import AppButton from "../AppButton/AppButton";
 
-const Carousel = ({ PHOTOS_CAROUSEL, CONFIRME_PRESENCE, title, subtitle }: ICarousel) => {
+const Carousel = ({ PHOTOS_CAROUSEL, title, subtitle }: ICarousel) => {
   const theme = useTheme();
   const slidesPerView = Math.min(PHOTOS_CAROUSEL.length, 2);
 
@@ -65,9 +64,23 @@ const Carousel = ({ PHOTOS_CAROUSEL, CONFIRME_PRESENCE, title, subtitle }: ICaro
           });
           swiper.slides[swiper.activeIndex].classList.add('swiper-slide-active-text');
         }}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
       >
         {PHOTOS_CAROUSEL.map((photo, index) => (
-          <SwiperSlide key={index} style={{ width: '25rem', minWidth: "25rem" }}>
+          <SwiperSlide 
+            key={index} 
+            style={{ 
+              width: '25rem', 
+              minWidth: "25rem",
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
             <a className="tag_slide_image" rel="noopener noreferrer">
               <img src={photo.SRC} alt="slide_image" />
             </a>
@@ -75,7 +88,6 @@ const Carousel = ({ PHOTOS_CAROUSEL, CONFIRME_PRESENCE, title, subtitle }: ICaro
         ))}
       </Swiper>
       <StyledTextBox theme={theme}>
-        {/* <AppButton ghost text={CONFIRME_PRESENCE.TEXT} type="primary" navigateTo={CONFIRME_PRESENCE.URL}/> */}
         <p>{PHOTOS_CAROUSEL.length > 0 && PHOTOS_CAROUSEL[0].DESCRIPTION}</p>
       </StyledTextBox>
     </StyledCarousel>

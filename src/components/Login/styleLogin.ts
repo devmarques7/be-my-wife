@@ -1,7 +1,12 @@
 import styled from 'styled-components';
 import { Box } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 
-export const StyledLogin = styled(Box)`
+interface StyledLoginProps {
+  theme: Theme;
+}
+
+export const StyledLogin = styled(Box)<StyledLoginProps>`
   display: flex;
   justify-content: center;
   align-items: center;

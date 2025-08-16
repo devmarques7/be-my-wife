@@ -103,16 +103,6 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
 
   const [isCartOpen, setIsCartOpen] = useState(false);
   
-  // Obter função de backup do contexto de sessão (se disponível)
-  const getSessionBackup = () => {
-    try {
-      const saved = localStorage.getItem('bmw_wedding_session_cart');
-      return saved ? JSON.parse(saved) : [];
-    } catch {
-      return [];
-    }
-  };
-  
   const backupCartToSession = (items: ICartItem[]) => {
     try {
       localStorage.setItem('bmw_wedding_session_cart', JSON.stringify(items));

@@ -1,7 +1,12 @@
 import { Box, Link } from '@mui/material';
 import styled from 'styled-components';
+import { Theme } from '@mui/material/styles';
 
-export const StyledFooter = styled(Box)`
+interface StyledThemeProps {
+  theme: Theme;
+}
+
+export const StyledFooter = styled(Box)<StyledThemeProps>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -51,7 +56,7 @@ export const StyledFooter = styled(Box)`
   }
 `;
 
-export const NavLink = styled(Link)`
+export const NavLink = styled(Link)<StyledThemeProps>`
   font-size: clamp(0.8rem, 1.5vw, 2.5rem) !important;
   color: ${({ theme }) => theme.palette.text.primary} !important;
   cursor: pointer;
@@ -69,7 +74,7 @@ export const Logo = styled.div`
   margin-bottom: 10px;
 `;
 
-export const Rights = styled.div`
+export const Rights = styled.div<StyledThemeProps>`
   font-size: clamp(0.5rem, 1vw, 3rem) !important;
   color: ${({ theme }) => theme.palette.text.secondary};
 `;

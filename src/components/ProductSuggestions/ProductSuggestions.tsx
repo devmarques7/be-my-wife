@@ -6,12 +6,10 @@ import {
   CardContent,
   CardMedia,
   Grid,
-  Button,
   useTheme,
   Chip,
   Stack
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
 import { useCart } from '../../context/CartContext';
 import { productService } from '../../services/productService';
 import { IPresent } from '../../types/presents';

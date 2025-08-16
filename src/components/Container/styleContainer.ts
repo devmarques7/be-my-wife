@@ -32,7 +32,7 @@ export const StyledContainer = styled.div<IStyledContainer>`
         `;
       case "medium":
         return css`
-          height: 45vh;
+          height: 30vh;
         `;
       case "big":
         return css`

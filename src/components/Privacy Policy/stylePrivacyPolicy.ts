@@ -1,6 +1,11 @@
 import styled from "styled-components";
+import { Theme } from "@mui/material/styles";
 
-export const Component = styled.div`
+interface StyledPrivacyPolicyProps {
+  theme: Theme;
+}
+
+export const Component = styled.div<StyledPrivacyPolicyProps>`
   display: flex;
   justify-content: space-between;
   align-items: center;

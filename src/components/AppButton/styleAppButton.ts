@@ -1,8 +1,7 @@
-import { Button, ButtonProps } from 'antd';
 import styled from 'styled-components';
 import { Theme } from '@mui/material/styles';
 
-export interface IAppButtonProps extends ButtonProps {
+export interface IAppButtonProps {
   type?: "primary" | "dashed" | "default";
   navigateTo?: string;
   disabled?: boolean;
@@ -11,6 +10,7 @@ export interface IAppButtonProps extends ButtonProps {
 interface StyledAppButtonProps {
   type: 'primary' | 'dashed';
   disabled?: boolean;
+  fullWidth?: boolean;
   theme: Theme;
 }
 
@@ -23,6 +23,7 @@ export const StyledAppButton = styled.button<StyledAppButtonProps>`
   transition: all 0.3s ease;
   opacity: ${props => props.disabled ? 0.6 : 1};
   font-family: ${props => props.theme.typography.fontFamily};
+  width: ${props => props.fullWidth ? '100%' : 'auto'};
 
   ${props => props.type === 'primary' && `
     background-color: ${props.theme.palette.secondary.main};

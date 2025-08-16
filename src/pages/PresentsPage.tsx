@@ -11,13 +11,8 @@ import {
   CardMedia, 
   Typography, 
   Grid, 
-  Select, 
-  MenuItem, 
-  FormControl, 
-  InputLabel, 
   Box, 
   Chip,
-  Slider,
   Stack,
   Button,
   CircularProgress,
@@ -45,7 +40,6 @@ const PresentsPage: React.FC = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const initialPriceRange: [number, number] = [0, 1000000];
-  const [priceRange, setPriceRange] = useState<[number, number]>(initialPriceRange);
   const [currentPriceRange, setCurrentPriceRange] = useState<[number, number]>(initialPriceRange);
 
   useEffect(() => {
@@ -72,15 +66,14 @@ const PresentsPage: React.FC = () => {
         const prices = data.map(p => p.price);
         const minPrice = Math.min(...prices);
         const maxPrice = Math.max(...prices);
-        setPriceRange([minPrice, maxPrice] as [number, number]);
         setCurrentPriceRange([minPrice, maxPrice] as [number, number]);
       }
       
       setError(null);
       console.log(`✅ ${data.length} produtos carregados com sucesso`);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('❌ Erro ao carregar presentes:', err);
-      const errorMessage = err?.response?.data?.error || err?.message || 'Erro desconhecido';
+      const errorMessage = (err as { response?: { data?: { error?: string } }, message?: string })?.response?.data?.error || (err as { message?: string })?.message || 'Erro desconhecido';
       setError(`Falha ao carregar os presentes: ${errorMessage}`);
     } finally {
       if (isInitialLoad) setLoading(false);
@@ -105,7 +98,7 @@ const PresentsPage: React.FC = () => {
     return [Math.min(...prices), Math.max(...prices)];
   }, [presents]);
 
-  const handlePriceRangeChange = (event: Event, newValue: number | number[]) => {
+  const handlePriceRangeChange = (_event: Event, newValue: number | number[]) => {
     setCurrentPriceRange(newValue as [number, number]);
   };
 
@@ -232,19 +225,35 @@ const PresentsPage: React.FC = () => {
         <CompactCountDown 
           datetime={DATETIME_COUNTDOWN} 
           time_fields={TIME_FIELDS}
+          colorVariant='secondary'
         />
         <div className="presents-content">
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Box>
-              <h2>{TITLE}</h2>
-              <p>{DESCRIPTION}</p>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column',
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            mb: 2,
+            textAlign: 'center'
+          }}>
+            <Box sx={{ textAlign: 'center' }}>
+              <h2 style={{ 
+                color: theme.palette.text.primary,
+                textAlign: 'center',
+                margin: '0 auto'
+              }}>{TITLE}</h2>
+              <p style={{ 
+                color: theme.palette.text.primary,
+                textAlign: 'center',
+                margin: '0 auto'
+              }}>{DESCRIPTION}</p>
             </Box>
             <Button
               variant="outlined"
               onClick={handleRefresh}
               disabled={refreshing}
               startIcon={refreshing ? <CircularProgress size={20} /> : undefined}
-              sx={{ ml: 2 }}
+              sx={{ ml: 2, mt: 2 }}
             >
               {refreshing ? 'Atualizando...' : 'Atualizar'}
             </Button>
