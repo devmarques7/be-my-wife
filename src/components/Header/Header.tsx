@@ -8,7 +8,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import GlobalStyles from "../../style/styledGlobal";
-import { Link } from "react-router-dom";
 
 export interface IHeaderProps {}
 
@@ -28,7 +27,6 @@ const Header: React.FC<IHeaderProps> = () => {
   // Renderiza condicionalmente os links de navegação
   const conditionalRender = (link: string, index: number) => {
     let currentHref = ""
-    let isExternalLink = false
     
     if(index === 0){currentHref = "/"}
     if(index === 1){currentHref = "/#countdown_page"}
