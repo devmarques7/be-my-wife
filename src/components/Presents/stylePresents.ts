@@ -1,7 +1,12 @@
 import styled from "styled-components";
 import { Box } from "@mui/material";
+import { Theme } from "@mui/material/styles";
 
-export const StyledPresents = styled(Box)`
+interface StyledPresentsProps {
+  theme: Theme;
+}
+
+export const StyledPresents = styled(Box)<StyledPresentsProps>`
   display: flex;
   flex-direction: column;
   align-items: center;

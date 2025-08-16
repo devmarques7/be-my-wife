@@ -25,7 +25,7 @@ import AppButton from '../AppButton/AppButton';
 const Cart: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { cart, isCartOpen, toggleCart, removeFromCart, updateQuantity } = useCart();
+  const { cart, isCartOpen, toggleCart, removeFromCart } = useCart();
 
   const handleCheckout = () => {
     toggleCart();

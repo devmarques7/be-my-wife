@@ -23,7 +23,7 @@ export const CartHeader = styled(Box)(({ theme }) => ({
   minHeight: 64,
 }));
 
-export const CartContent = styled(Box)(({ theme }) => ({
+export const CartContent = styled(Box)(() => ({
   flex: 1,
   overflowY: 'auto',
   display: 'flex',

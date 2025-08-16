@@ -15,9 +15,7 @@ interface PresentModalProps {
 const PresentModal: React.FC<PresentModalProps> = ({
   open,
   onClose,
-  present,
-  onSelect,
-  isSelected
+  present
 }) => {
   const theme = useTheme();
   const { addToCart, isProductInCart } = useCart();

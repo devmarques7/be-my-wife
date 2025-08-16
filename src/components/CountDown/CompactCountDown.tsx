@@ -12,6 +12,8 @@ export interface ICompactCountDownProps {
     minutes: string;
     seconds: string;
   };
+  colorVariant?: 'primary' | 'secondary';
+  textColor?: 'dark' | 'white';
 }
 
 const calculateTimeLeft = (eventDate: Date) => {
@@ -34,7 +36,12 @@ const calculateTimeLeft = (eventDate: Date) => {
   return timeLeft;
 };
 
-const CompactCountDown: React.FC<ICompactCountDownProps> = ({ datetime, time_fields }) => {
+const CompactCountDown: React.FC<ICompactCountDownProps> = ({ 
+  datetime, 
+  time_fields, 
+  colorVariant = 'primary',
+  textColor = 'dark'
+}) => {
   const theme = useTheme();
   const eventDate = new Date(datetime);
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft(eventDate));
@@ -48,11 +55,11 @@ const CompactCountDown: React.FC<ICompactCountDownProps> = ({ datetime, time_fie
   }, [eventDate]);
 
   return (
-    <StyledCompactCountDown theme={theme}>
-      <TimeSegment value={timeLeft.days} label={time_fields.days} />
-      <TimeSegment value={timeLeft.hours} label={time_fields.hours} />
-      <TimeSegment value={timeLeft.minutes} label={time_fields.minutes} />
-      <TimeSegment value={timeLeft.seconds} label={time_fields.seconds} />
+    <StyledCompactCountDown theme={theme} textColor={textColor}>
+      <TimeSegment value={timeLeft.days} label={time_fields.days} colorVariant={colorVariant} />
+      <TimeSegment value={timeLeft.hours} label={time_fields.hours} colorVariant={colorVariant} />
+      <TimeSegment value={timeLeft.minutes} label={time_fields.minutes} colorVariant={colorVariant} />
+      <TimeSegment value={timeLeft.seconds} label={time_fields.seconds} colorVariant={colorVariant} />
     </StyledCompactCountDown>
   );
 };

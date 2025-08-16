@@ -33,7 +33,7 @@ const CartNotification: React.FC<CartNotificationProps> = ({ onViewCart }) => {
     setPrevItemCount(cart.itemCount);
   }, [cart.itemCount, cart.items, prevItemCount]);
 
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+  const handleClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === 'clickaway') {
       return;
     }

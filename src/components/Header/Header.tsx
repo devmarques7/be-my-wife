@@ -8,7 +8,6 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import GlobalStyles from "../../style/styledGlobal";
-import { Link } from "react-router-dom";
 
 export interface IHeaderProps {}
 
@@ -25,30 +24,43 @@ const Header: React.FC<IHeaderProps> = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Função para rolar suavemente para a seção desejada
-  const scrollToSection = (id: string) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-    setIsMenuOpen(false); // Fecha o menu após a navegação
-  };
-
   // Renderiza condicionalmente os links de navegação
   const conditionalRender = (link: string, index: number) => {
     let currentHref = ""
+    
     if(index === 0){currentHref = "/"}
     if(index === 1){currentHref = "/#countdown_page"}
     if(index === 2){currentHref = "/#location_page"}
     if(index === 3){currentHref = "/presents"}
 
+    const handleClick = (e: React.MouseEvent) => {
+      e.preventDefault();
+      setIsMenuOpen(false);
+      
+      if (index === 0) {
+        // Navegar para home
+        window.location.href = "/";
+      } else if (index === 3) {
+        // Navegar para presents page
+        window.location.href = "/presents";
+      } else {
+        // Scroll suave para seção na mesma página
+        const element = document.getElementById(currentHref.replace('/#', ''));
+        if (element) {
+          element.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+        }
+      }
+    };
+
     return (
       <StyledLink
         key={link}
         theme={theme}
-        as={Link}
-        to={currentHref}
-        onClick={() => setIsMenuOpen(false)}
+        href={currentHref}
+        onClick={handleClick}
       >
         {link}
       </StyledLink>

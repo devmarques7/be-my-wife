@@ -1,8 +1,13 @@
 import { Box, Link } from '@mui/material';
 import styled from 'styled-components';
+import { Theme } from '@mui/material/styles';
+
+interface StyledThemeProps {
+  theme: Theme;
+}
 
 // Estilize o componente StyledBox
-export const StyledHeaderContainer = styled.header`
+export const StyledHeaderContainer = styled.header<StyledThemeProps>`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -37,8 +42,8 @@ export const StyledNav = styled(Box)`
 `;
 
 // Estilize o componente StyledLink
-export const StyledLink = styled(Link)`
-  font-size: ${({ theme }) => theme.typography.p.fontSize}px !important;
+export const StyledLink = styled(Link)<StyledThemeProps>`
+  font-size: ${({ theme }) => theme.typography.fontSize}px !important;
   color: ${({ theme }) => theme.palette.secondary.main} !important;
   cursor: pointer;
 `;
@@ -55,7 +60,7 @@ export const HamburgerIcon = styled.div<{ $isMenuOpen: boolean }>`
 `;
 
 // Estilize o componente MobileMenu
-export const MobileMenu = styled.div`
+export const MobileMenu = styled.div<StyledThemeProps>`
   display: flex;
   flex-direction: column;
   justify-content: space-between;

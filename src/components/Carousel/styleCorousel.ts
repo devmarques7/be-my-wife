@@ -1,6 +1,11 @@
 import styled from "styled-components";
+import { Theme } from "@mui/material/styles";
 
-export const StyledCarousel = styled.div`
+interface StyledThemeProps {
+  theme: Theme;
+}
+
+export const StyledCarousel = styled.div<StyledThemeProps>`
   background-color: ${({ theme }) => theme.palette.background.default};
   display: flex;
   flex-direction: column;
@@ -8,6 +13,9 @@ export const StyledCarousel = styled.div`
   align-items: center;
   height: 100vh;
   width: 100vw;
+  margin-top: 80px; /* Separar do Header fixo */
+  position: relative;
+  overflow: hidden;
 
   html {
     font-size: 62.5%;
@@ -72,6 +80,11 @@ export const StyledCarousel = styled.div`
     padding: 2rem 0;
     position: relative;
     width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .swiper-slide {
@@ -79,20 +92,23 @@ export const StyledCarousel = styled.div`
     height: 42rem;
     position: relative;
     transition: transform 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .swiper-slide img {
-    position: absolute;
-    left: 50%; /* Center horizontally */
-    transform: translateX(-50%); /* Adjust for exact center */
-
+    position: relative;
     width: 65%;
     height: 90%;
     border-radius: 0rem;
     object-fit: cover;
+    max-width: 100%;
+    max-height: 100%;
 
     @media (max-width: 480px) {
       height: 95%;
+      width: 80%;
     }
   }
 
@@ -122,38 +138,73 @@ export const StyledCarousel = styled.div`
 
 
   @media (max-width: 1075px) {
+    .swiper_container {
+      max-width: 90vw;
+    }
+    
     .swiper-slide {
       width: 30rem;
       height: 34rem;
 
       img{
         height: 80%;
-        width: 18rem;
+        width: 70%;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .swiper_container {
+      max-width: 95vw;
+      height: 70%;
+    }
+    
+    .swiper-slide {
+      width: 28rem;
+      height: 32rem;
+      
+      img {
+        width: 75%;
+        height: 85%;
       }
     }
   }
 
   @media (max-width: 480px) {
+    .swiper_container {
+      height: 60%;
+      max-width: 98vw;
+    }
+    
     .swiper-slide {
       width: 25rem;
       height: 26rem;
 
       img{
         height: 95%;
-        width: 18rem;
+        width: 80%;
       }
     }
   }
 
   @media (max-width: 380px) {
+    .swiper_container {
+      height: 55%;
+    }
+    
     .swiper-slide {
       width: 20rem;
       height: 25rem;
+      
+      img {
+        width: 85%;
+        height: 90%;
+      }
     }
   } 
 `;
 
-export const StyledTitle = styled.h5`
+export const StyledTitle = styled.h5<StyledThemeProps>`
   position: relative;
   text-align: center;
   z-index: 10;
@@ -167,7 +218,7 @@ export const StyledTitle = styled.h5`
 
 `;
 
-export const StyledSubTitle = styled.h4`
+export const StyledSubTitle = styled.h4<StyledThemeProps>`
   position: relative;
   text-align: center;
   left: 35%; /* Center horizontally */
@@ -200,7 +251,7 @@ export const StyledSubTitle = styled.h4`
   }
 `;
 
-export const StyledTextBox = styled.div`
+export const StyledTextBox = styled.div<StyledThemeProps>`
   display: flex;
   align-items: center;
   justify-content: center;

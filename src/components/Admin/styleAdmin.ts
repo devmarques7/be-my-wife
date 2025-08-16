@@ -1,7 +1,12 @@
 import styled from 'styled-components';
 import { Box } from '@mui/material';
+import { Theme } from '@mui/material/styles';
 
-export const StyledAdmin = styled(Box)`
+interface StyledAdminProps {
+  theme: Theme;
+}
+
+export const StyledAdmin = styled(Box)<StyledAdminProps>`
   padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;

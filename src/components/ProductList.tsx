@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Product } from '../types/Product';
+import { IPresent } from '../types/presents';
 import { productService } from '../services/productService';
 
 export const ProductList: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<IPresent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,12 +40,12 @@ export const ProductList: React.FC = () => {
     <div className="product-list">
       {products.map((product) => (
         <div key={product.id} className="product-card">
-          {product.images && product.images[0] && (
-            <img src={product.images[0]} alt={product.name} />
+          {product.image && (
+            <img src={product.image} alt={product.name} />
           )}
           <h3>{product.name}</h3>
           <p>{product.description}</p>
-          <p>Price: {product.price} {product.currency}</p>
+          <p>Price: € {(product.price / 100).toFixed(2)}</p>
           <button onClick={() => handleBuyClick(product.id)}>
             Buy Now
           </button>
