@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { useTheme } from "@mui/material";
 import { StyledPresents } from "../components/Presents/stylePresents";
 import Container from "../components/Container/Container";
@@ -15,7 +15,6 @@ import {
   Chip,
   Stack,
   Button,
-  CircularProgress,
   Alert
 } from "@mui/material";
 import { IPresent } from "../types/presents";
@@ -23,67 +22,43 @@ import PresentModal from "../components/PresentModal/PresentModal";
 import AppButton from "../components/AppButton/AppButton";
 import Header from "../components/Header/Header";
 import Privacy from "../components/Privacy Policy/privacyPolicy";
-import { productService } from '../services/productService';
 import PresentFilters from '../components/PresentFilters/PresentFilters';
+import { useOptimizedProducts } from '../hooks/useOptimizedProducts';
+import { ProductSkeletonGrid } from '../components/ProductSkeleton/ProductSkeleton';
+import LoadingProgress from '../components/LoadingProgress/LoadingProgress';
 
 const PresentsPage: React.FC = () => {
   const theme = useTheme();
   const { webContent } = React.useContext(AppContext);
   const { addToCart, isProductInCart } = useCart();
+  
+  // Filtros e estado local
   const [selectedCategory, setSelectedCategory] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("price-asc");
   const [availabilityFilter, setAvailabilityFilter] = useState<string>("all");
   const [selectedPresent, setSelectedPresent] = useState<IPresent | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [presents, setPresents] = useState<IPresent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const initialPriceRange: [number, number] = [0, 1000000];
   const [currentPriceRange, setCurrentPriceRange] = useState<[number, number]>(initialPriceRange);
 
-  useEffect(() => {
-    loadPresents();
-  }, []);
+  // Hook otimizado para carregamento
+  const { 
+    presents, 
+    skeletonData, 
+    loadingState, 
+    refresh, 
+    forceReload 
+  } = useOptimizedProducts();
 
-  const loadPresents = async (forceReload = false) => {
-    const isInitialLoad = loading;
-    
-    try {
-      if (forceReload) {
-        setRefreshing(true);
-        console.log('🔄 Forçando reload dos produtos...');
-      }
-
-      const data = forceReload 
-        ? await productService.forceReload()
-        : await productService.listProducts();
-      
-      setPresents(data);
-      
-      // Configurar o range de preços baseado nos produtos
-      if (data.length > 0) {
-        const prices = data.map(p => p.price);
-        const minPrice = Math.min(...prices);
-        const maxPrice = Math.max(...prices);
-        setCurrentPriceRange([minPrice, maxPrice] as [number, number]);
-      }
-      
-      setError(null);
-      console.log(`✅ ${data.length} produtos carregados com sucesso`);
-    } catch (err: unknown) {
-      console.error('❌ Erro ao carregar presentes:', err);
-      const errorMessage = (err as { response?: { data?: { error?: string } }, message?: string })?.response?.data?.error || (err as { message?: string })?.message || 'Erro desconhecido';
-      setError(`Falha ao carregar os presentes: ${errorMessage}`);
-    } finally {
-      if (isInitialLoad) setLoading(false);
-      if (forceReload) setRefreshing(false);
+  // Atualizar range de preços quando os produtos carregarem
+  React.useEffect(() => {
+    if (presents.length > 0) {
+      const prices = presents.map(p => p.price);
+      const minPrice = Math.min(...prices);
+      const maxPrice = Math.max(...prices);
+      setCurrentPriceRange([minPrice, maxPrice] as [number, number]);
     }
-  };
-
-  const handleRefresh = () => {
-    loadPresents(true);
-  };
+  }, [presents]);
 
   // Obter categorias únicas dos produtos
   const availableCategories = useMemo(() => {
@@ -165,57 +140,9 @@ const PresentsPage: React.FC = () => {
   const { DATETIME_COUNTDOWN, TIME_FIELDS } = webContent.COUNTDOWN;
   const { TITLE, DESCRIPTION } = webContent.PRESENTS;
 
-  if (loading) {
-    return (
-      <Container id="presents_page" backgroundType="color" backgroundSrc={theme.palette.primary.main}>
-        <Header />
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: '50vh',
-          gap: 2
-        }}>
-          <CircularProgress size={60} />
-          <Typography variant="h5">Carregando presentes...</Typography>
-          <Typography variant="body2" color="textSecondary">
-            Isso pode levar alguns segundos...
-          </Typography>
-        </Box>
-      </Container>
-    );
-  }
-
-  if (error) {
-    return (
-      <Container id="presents_page" backgroundType="color" backgroundSrc={theme.palette.primary.main}>
-        <Header />
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column',
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: '50vh',
-          gap: 2,
-          p: 3
-        }}>
-          <Alert severity="error" sx={{ maxWidth: 600 }}>
-            <Typography variant="h6" gutterBottom>Erro ao carregar presentes</Typography>
-            <Typography variant="body2">{error}</Typography>
-          </Alert>
-          <Button 
-            variant="contained" 
-            onClick={handleRefresh}
-            disabled={refreshing}
-            startIcon={refreshing ? <CircularProgress size={20} /> : undefined}
-          >
-            {refreshing ? 'Recarregando...' : 'Tentar Novamente'}
-          </Button>
-        </Box>
-      </Container>
-    );
-  }
+  // Estados de carregamento otimizados
+  const showSkeletonOnly = loadingState.isLoading && !loadingState.hasSkeletonData && presents.length === 0;
+  const showSkeletonWithData = loadingState.hasSkeletonData && presents.length === 0;
 
   return (
     <Container id="presents_page" backgroundType="color" backgroundSrc={theme.palette.primary.main}>
@@ -228,6 +155,7 @@ const PresentsPage: React.FC = () => {
           colorVariant='secondary'
         />
         <div className="presents-content">
+          {/* Header da página */}
           <Box sx={{ 
             display: 'flex', 
             flexDirection: 'column',
@@ -250,20 +178,25 @@ const PresentsPage: React.FC = () => {
             </Box>
             <Button
               variant="outlined"
-              onClick={handleRefresh}
-              disabled={refreshing}
-              startIcon={refreshing ? <CircularProgress size={20} /> : undefined}
+              onClick={forceReload}
+              disabled={loadingState.isLoading || loadingState.isRefreshing}
               sx={{ ml: 2, mt: 2 }}
             >
-              {refreshing ? 'Atualizando...' : 'Atualizar'}
+              Atualizar Lista
             </Button>
           </Box>
-          
-          {refreshing && (
-            <Alert severity="info" sx={{ mb: 2 }}>
-              Atualizando lista de presentes...
-            </Alert>
-          )}
+
+          {/* Progress Indicator */}
+          {/* <LoadingProgress
+            isLoading={loadingState.isLoading}
+            isRefreshing={loadingState.isRefreshing}
+            hasError={loadingState.hasError}
+            errorMessage={loadingState.errorMessage}
+            progress={loadingState.loadingProgress}
+            hasSkeletonData={loadingState.hasSkeletonData}
+            onRetry={refresh}
+            onForceReload={forceReload}
+          /> */}
           
           <Box sx={{ mb: 4 }}>
             <PresentFilters
@@ -281,102 +214,124 @@ const PresentsPage: React.FC = () => {
             />
           </Box>
 
-          <Stack spacing={4}>
-            {Object.entries(presentsByCategory).map(([category, presents]) => (
-              <Box key={category}>
-                <Typography variant="h4" component="h3" gutterBottom sx={{ mb: 3 }}>
-                  {category}
-                </Typography>
-                <Grid container spacing={3}>
-                  {presents.map((present) => (
-                    <Grid item xs={12} sm={6} md={4} key={present.id}>
-                      <Card sx={{ 
-                        height: '100%', 
-                        display: 'flex', 
-                        flexDirection: 'column',
-                        backgroundColor: `${theme.palette.primary.main}10`,
-                        position: 'relative',
-                        '&:hover': {
-                          transform: 'translateY(-5px)',
-                          transition: 'transform 0.3s ease'
-                        }
-                      }}>
-                        <Chip
-                          label={present.isSelected ? "Vendido" : "Disponível"}
-                          color={present.isSelected ? "error" : "success"}
-                          sx={{
-                            position: 'absolute',
-                            top: 16,
-                            right: 16,
-                            zIndex: 1
-                          }}
-                        />
-                        <CardMedia
-                          component="img"
-                          height="200"
-                          image={present.image}
-                          alt={present.name}
-                        />
-                        <CardContent sx={{ flexGrow: 1 }}>
-                          <Typography gutterBottom variant="h5" component="div">
-                            {present.name}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                            {present.description}
-                          </Typography>
-                          <Typography 
-                            variant="h6" 
-                            sx={{ 
-                              mb: 2,
-                              color: 'text.primary',
-                              opacity: present.isSelected ? 0.7 : 1,
-                              textDecoration: present.isSelected ? 'line-through' : 'none'
+          {/* Conteúdo principal - produtos ou skeleton */}
+          {showSkeletonOnly && (
+            <Box>
+              <Typography variant="h6" color="textSecondary" textAlign="center" sx={{ mb: 3 }}>
+                Carregando presentes...
+              </Typography>
+              <ProductSkeletonGrid count={6} />
+            </Box>
+          )}
+
+          {showSkeletonWithData && (
+            <Box>
+              <Alert severity="info" sx={{ mb: 3 }}>
+                Mostrando dados em cache enquanto carrega a versão mais recente
+              </Alert>
+              <ProductSkeletonGrid count={6} skeletonData={skeletonData} />
+            </Box>
+          )}
+
+          {presents.length > 0 && (
+            <Stack spacing={4}>
+              {Object.entries(presentsByCategory).map(([category, presents]) => (
+                <Box key={category}>
+                  <Typography variant="h4" component="h3" gutterBottom sx={{ mb: 3 }}>
+                    {category}
+                  </Typography>
+                  <Grid container spacing={3}>
+                    {presents.map((present) => (
+                      <Grid item xs={12} sm={6} md={4} key={present.id}>
+                        <Card sx={{ 
+                          height: '100%', 
+                          display: 'flex', 
+                          flexDirection: 'column',
+                          backgroundColor: `${theme.palette.primary.main}10`,
+                          position: 'relative',
+                          opacity: loadingState.isRefreshing ? 0.8 : 1,
+                          '&:hover': {
+                            transform: 'translateY(-5px)',
+                            transition: 'transform 0.3s ease'
+                          }
+                        }}>
+                          <Chip
+                            label={present.isSelected ? "Vendido" : "Disponível"}
+                            color={present.isSelected ? "error" : "success"}
+                            sx={{
+                              position: 'absolute',
+                              top: 16,
+                              right: 16,
+                              zIndex: 1
                             }}
-                          >
-                            € {(present.price / 100).toFixed(2)}
-                          </Typography>
-                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-                            <AppButton
-                              text="Ver Detalhes"
-                              type="primary"
-                              onClick={() => handleOpenDetails(present)}
-                            />
-                            <AppButton
-                              text={
-                                present.isSelected 
-                                  ? "Não Disponível" 
-                                  : isProductInCart(present.id) 
-                                    ? "✓ No Carrinho" 
-                                    : "Adicionar ao Carrinho"
-                              }
-                              type={
-                                present.isSelected 
-                                  ? "dashed" 
-                                  : isProductInCart(present.id) 
-                                    ? "primary" 
-                                    : "dashed"
-                              }
-                              onClick={() => {
-                                if (!present.isSelected && !isProductInCart(present.id)) {
-                                  const success = addToCart(present);
-                                  if (success) {
-                                    console.log(`✅ ${present.name} adicionado ao carrinho`);
-                                  } else {
-                                    console.log(`⚠️ Não foi possível adicionar ${present.name} ao carrinho`);
-                                  }
-                                }
+                          />
+                          <CardMedia
+                            component="img"
+                            height="200"
+                            image={present.image}
+                            alt={present.name}
+                          />
+                          <CardContent sx={{ flexGrow: 1 }}>
+                            <Typography gutterBottom variant="h5" component="div">
+                              {present.name}
+                            </Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                              {present.description}
+                            </Typography>
+                            <Typography 
+                              variant="h6" 
+                              sx={{ 
+                                mb: 2,
+                                color: 'text.primary',
+                                opacity: present.isSelected ? 0.7 : 1,
+                                textDecoration: present.isSelected ? 'line-through' : 'none'
                               }}
-                              disabled={present.isSelected || isProductInCart(present.id)}
-                            />
-                          </Box>
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-            ))}
-          </Stack>
+                            >
+                              € {(present.price / 100).toFixed(2)}
+                            </Typography>
+                            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                              <AppButton
+                                text="Ver Detalhes"
+                                type="primary"
+                                onClick={() => handleOpenDetails(present)}
+                              />
+                              <AppButton
+                                text={
+                                  present.isSelected 
+                                    ? "Não Disponível" 
+                                    : isProductInCart(present.id) 
+                                      ? "✓ No Carrinho" 
+                                      : "Adicionar ao Carrinho"
+                                }
+                                type={
+                                  present.isSelected 
+                                    ? "dashed" 
+                                    : isProductInCart(present.id) 
+                                      ? "primary" 
+                                      : "dashed"
+                                }
+                                onClick={() => {
+                                  if (!present.isSelected && !isProductInCart(present.id)) {
+                                    const success = addToCart(present);
+                                    if (success) {
+                                      console.log(`✅ ${present.name} adicionado ao carrinho`);
+                                    } else {
+                                      console.log(`⚠️ Não foi possível adicionar ${present.name} ao carrinho`);
+                                    }
+                                  }
+                                }}
+                                disabled={present.isSelected || isProductInCart(present.id)}
+                              />
+                            </Box>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                </Box>
+              ))}
+            </Stack>
+          )}
 
           <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
             <AppButton

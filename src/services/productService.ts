@@ -14,16 +14,32 @@ interface CreatePresentInput {
 
 // Cache para produtos
 const PRODUCTS_CACHE_KEY = 'bmw_products_cache';
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
+const PRODUCTS_SKELETON_KEY = 'bmw_products_skeleton';
+const CACHE_DURATION = 10 * 60 * 1000; // 10 minutos (aumentado)
+const SKELETON_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas para skeleton
 
 interface CachedProducts {
   data: IPresent[];
+  timestamp: number;
+  version: string;
+}
+
+interface ProductSkeleton {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+}
+
+interface SkeletonCache {
+  data: ProductSkeleton[];
   timestamp: number;
 }
 
 export const productService = {
   // Cache local para melhorar performance
   _productsCache: null as CachedProducts | null,
+  _skeletonCache: null as SkeletonCache | null,
 
   // Verificar se o cache é válido
   _isCacheValid(): boolean {
@@ -32,11 +48,19 @@ export const productService = {
     return (now - this._productsCache.timestamp) < CACHE_DURATION;
   },
 
+  // Verificar se o skeleton cache é válido
+  _isSkeletonCacheValid(): boolean {
+    if (!this._skeletonCache) return false;
+    const now = Date.now();
+    return (now - this._skeletonCache.timestamp) < SKELETON_CACHE_DURATION;
+  },
+
   // Salvar no cache
   _saveToCache(data: IPresent[]): void {
     this._productsCache = {
       data,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      version: '1.0'
     };
     
     // Salvar também no localStorage
@@ -45,6 +69,59 @@ export const productService = {
     } catch (error) {
       console.warn('Failed to save products to localStorage:', error);
     }
+
+    // Salvar skeleton para carregamento rápido futuro
+    this._saveSkeletonToCache(data);
+  },
+
+  // Salvar skeleton cache
+  _saveSkeletonToCache(data: IPresent[]): void {
+    const skeletonData = data.map(product => ({
+      id: product.id,
+      name: product.name,
+      category: product.category,
+      price: product.price
+    }));
+
+    this._skeletonCache = {
+      data: skeletonData,
+      timestamp: Date.now()
+    };
+
+    try {
+      localStorage.setItem(PRODUCTS_SKELETON_KEY, JSON.stringify(this._skeletonCache));
+    } catch (error) {
+      console.warn('Failed to save skeleton to localStorage:', error);
+    }
+  },
+
+  // Carregar skeleton do cache
+  _loadSkeletonFromCache(): ProductSkeleton[] | null {
+    // Tentar cache em memória primeiro
+    if (this._isSkeletonCacheValid()) {
+      return this._skeletonCache!.data;
+    }
+
+    // Tentar localStorage
+    try {
+      const cached = localStorage.getItem(PRODUCTS_SKELETON_KEY);
+      if (cached) {
+        const parsedCache: SkeletonCache = JSON.parse(cached);
+        const now = Date.now();
+        
+        if ((now - parsedCache.timestamp) < SKELETON_CACHE_DURATION) {
+          this._skeletonCache = parsedCache;
+          return parsedCache.data;
+        } else {
+          localStorage.removeItem(PRODUCTS_SKELETON_KEY);
+        }
+      }
+    } catch (error) {
+      console.warn('Failed to load skeleton from cache:', error);
+      localStorage.removeItem(PRODUCTS_SKELETON_KEY);
+    }
+
+    return null;
   },
 
   // Carregar do cache
@@ -76,6 +153,11 @@ export const productService = {
     }
 
     return null;
+  },
+
+  // Carregar skeleton - para exibição imediata
+  getSkeletonData(): ProductSkeleton[] | null {
+    return this._loadSkeletonFromCache();
   },
 
   // Listar todos os produtos da Stripe com cache
